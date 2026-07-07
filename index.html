@@ -7,69 +7,129 @@
 <title>KurdiBird</title>
 
 <style>
+
+html,
 body{
     margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#70c5ce;
+}
+
+body{
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
-    background:#70c5ce;
-    overflow:hidden;
 }
 
 canvas{
-    border:3px solid black;
-    background:skyblue;
+    display:block;
+    background:#70c5ce;
 }
+
+#fullscreenBtn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    z-index:1000;
+
+    padding:12px 20px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#007bff;
+    color:white;
+
+    font-size:16px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
 </style>
 </head>
 
 <body>
 
-<canvas id="game" width="400" height="600"></canvas>
+<canvas id="game"></canvas>
+
+<button id="fullscreenBtn">
+⛶ Full Screen
+</button>
 
 <script>
+
+// CANVAS
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+function resizeCanvas(){
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+}
+
+resizeCanvas();
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+// BIRD
+
 const bird = {
     x:100,
-    y:250,
-    width:30,
-    height:30,
+    y:window.innerHeight/2,
+    width:35,
+    height:35,
     velocity:0
 };
 
 const gravity = 0.5;
-const jumpForce = -8;
+const jumpForce = -9;
+
+// GAME
 
 let pipes = [];
 let score = 0;
+
 let gameStarted = false;
 let gameOver = false;
 
+// RESTART BUTTON
+
 const restartButton = {
-    x:130,
-    y:340,
-    width:140,
-    height:50
+    x:0,
+    y:0,
+    width:180,
+    height:60
 };
+
+// CREATE PIPES
 
 function createPipe(){
 
-    const gap = 150;
+    const gap = 180;
 
     const topHeight =
-        Math.random() * 250 + 50;
+        Math.random() *
+        (canvas.height * 0.4)
+        + 50;
 
     pipes.push({
         x:canvas.width,
-        width:60,
+        width:80,
         top:topHeight,
         bottom:topHeight + gap,
         passed:false
     });
+
 }
 
 setInterval(()=>{
@@ -80,71 +140,94 @@ setInterval(()=>{
 
 },2000);
 
+// RESET GAME
+
 function resetGame(){
 
-    bird.y = 250;
+    bird.y = canvas.height / 2;
     bird.velocity = 0;
-
-    pipes = [];
 
     score = 0;
 
+    pipes = [];
+
     gameOver = false;
     gameStarted = true;
+
 }
+
+// UPDATE
 
 function update(){
 
-    if(!gameStarted || gameOver){
-        return;
-    }
+    if(!gameStarted) return;
+    if(gameOver) return;
 
     bird.velocity += gravity;
+
     bird.y += bird.velocity;
 
     if(bird.y < 0){
+
         bird.y = 0;
+
     }
 
-    if(bird.y + bird.height > canvas.height){
+    if(
+        bird.y + bird.height >
+        canvas.height
+    ){
         gameOver = true;
     }
 
     pipes.forEach(pipe=>{
 
-        pipe.x -= 3;
+        pipe.x -= 4;
 
         const collision =
+
             bird.x + bird.width > pipe.x &&
             bird.x < pipe.x + pipe.width &&
+
             (
                 bird.y < pipe.top ||
-                bird.y + bird.height > pipe.bottom
+                bird.y + bird.height >
+                pipe.bottom
             );
 
         if(collision){
             gameOver = true;
         }
 
-        if(!pipe.passed && pipe.x < bird.x){
-            score++;
+        if(
+            !pipe.passed &&
+            pipe.x < bird.x
+        ){
             pipe.passed = true;
+            score++;
         }
 
     });
 
-    pipes = pipes.filter(pipe => pipe.x > -60);
+    pipes = pipes.filter(
+        pipe => pipe.x > -pipe.width
+    );
+
 }
+
+// DRAW
 
 function drawBackground(){
 
     ctx.fillStyle = "#70c5ce";
+
     ctx.fillRect(
         0,
         0,
         canvas.width,
         canvas.height
     );
+
 }
 
 function drawBird(){
@@ -157,6 +240,7 @@ function drawBird(){
         bird.width,
         bird.height
     );
+
 }
 
 function drawPipes(){
@@ -180,6 +264,7 @@ function drawPipes(){
         );
 
     });
+
 }
 
 function drawScore(){
@@ -189,57 +274,87 @@ function drawScore(){
 
     ctx.fillText(
         "Score: " + score,
-        10,
-        40
+        20,
+        45
     );
+
 }
 
 function drawStartScreen(){
 
-    ctx.fillStyle = "rgba(255,255,255,0.85)";
-    ctx.fillRect(40,150,320,220);
+    ctx.fillStyle =
+        "rgba(255,255,255,0.9)";
+
+    ctx.fillRect(
+        canvas.width/2 - 180,
+        canvas.height/2 - 120,
+        360,
+        240
+    );
 
     ctx.fillStyle = "black";
-    ctx.font = "48px Arial";
+
+    ctx.font = "50px Arial";
+
     ctx.fillText(
         "KurdiBird",
-        65,
-        220
+        canvas.width/2 - 120,
+        canvas.height/2 - 30
     );
 
     ctx.font = "24px Arial";
+
     ctx.fillText(
-        "Press SPACE",
-        115,
-        290
+        "Tap, Click or SPACE",
+        canvas.width/2 - 120,
+        canvas.height/2 + 30
     );
 
     ctx.fillText(
-        "or Click To Start",
-        90,
-        330
+        "to Start",
+        canvas.width/2 - 40,
+        canvas.height/2 + 70
     );
+
 }
 
-function drawGameOverScreen(){
+function drawGameOver(){
 
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.fillRect(40,160,320,280);
+    restartButton.x =
+        canvas.width/2 -
+        restartButton.width/2;
+
+    restartButton.y =
+        canvas.height/2 + 70;
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.95)";
+
+    ctx.fillRect(
+        canvas.width/2 - 200,
+        canvas.height/2 - 150,
+        400,
+        320
+    );
 
     ctx.fillStyle = "red";
-    ctx.font = "42px Arial";
+
+    ctx.font = "48px Arial";
+
     ctx.fillText(
         "GAME OVER",
-        55,
-        230
+        canvas.width/2 - 160,
+        canvas.height/2 - 50
     );
 
     ctx.fillStyle = "black";
+
     ctx.font = "30px Arial";
+
     ctx.fillText(
         "Score: " + score,
-        120,
-        290
+        canvas.width/2 - 70,
+        canvas.height/2
     );
 
     ctx.fillStyle = "#007bff";
@@ -252,12 +367,15 @@ function drawGameOverScreen(){
     );
 
     ctx.fillStyle = "white";
-    ctx.font = "25px Arial";
+
+    ctx.font = "26px Arial";
+
     ctx.fillText(
         "Restart",
-        145,
-        373
+        restartButton.x + 40,
+        restartButton.y + 38
     );
+
 }
 
 function draw(){
@@ -271,14 +389,20 @@ function draw(){
     drawScore();
 
     if(!gameStarted){
+
         drawStartScreen();
+
     }
 
     if(gameOver){
-        drawGameOverScreen();
+
+        drawGameOver();
+
     }
 
 }
+
+// LOOP
 
 function gameLoop(){
 
@@ -292,62 +416,151 @@ function gameLoop(){
 
 gameLoop();
 
-document.addEventListener("keydown",(e)=>{
+// FLAP
 
-    if(e.code !== "Space"){
-        return;
-    }
+function flap(){
 
     if(!gameStarted){
 
         gameStarted = true;
-        bird.velocity = jumpForce;
-        return;
 
     }
 
     if(!gameOver){
+
         bird.velocity = jumpForce;
+
     }
 
-});
+}
 
-canvas.addEventListener("click",(e)=>{
+// KEYBOARD
 
-    if(!gameStarted){
+document.addEventListener(
+    "keydown",
+    e=>{
 
-        gameStarted = true;
-        bird.velocity = jumpForce;
-        return;
-    }
+        if(e.code === "Space"){
 
-    if(gameOver){
+            flap();
 
-        const rect =
-            canvas.getBoundingClientRect();
-
-        const mouseX =
-            e.clientX - rect.left;
-
-        const mouseY =
-            e.clientY - rect.top;
-
-        const insideButton =
-            mouseX > restartButton.x &&
-            mouseX < restartButton.x + restartButton.width &&
-            mouseY > restartButton.y &&
-            mouseY < restartButton.y + restartButton.height;
-
-        if(insideButton){
-            resetGame();
         }
 
-        return;
     }
+);
 
-    bird.velocity = jumpForce;
+// CLICK
 
-});
+canvas.addEventListener(
+    "click",
+    e=>{
+
+        if(gameOver){
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+            const x =
+                e.clientX - rect.left;
+
+            const y =
+                e.clientY - rect.top;
+
+            if(
+
+                x > restartButton.x &&
+                x < restartButton.x +
+                restartButton.width &&
+
+                y > restartButton.y &&
+                y < restartButton.y +
+                restartButton.height
+
+            ){
+
+                resetGame();
+
+                return;
+
+            }
+
+        }
+
+        flap();
+
+    }
+);
+
+// TOUCH
+
+canvas.addEventListener(
+    "touchstart",
+    e=>{
+
+        e.preventDefault();
+
+        if(gameOver){
+
+            const touch =
+                e.touches[0];
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+            const x =
+                touch.clientX - rect.left;
+
+            const y =
+                touch.clientY - rect.top;
+
+            if(
+
+                x > restartButton.x &&
+                x < restartButton.x +
+                restartButton.width &&
+
+                y > restartButton.y &&
+                y < restartButton.y +
+                restartButton.height
+
+            ){
+
+                resetGame();
+
+                return;
+
+            }
+
+        }
+
+        flap();
+
+    }
+);
+
+// FULLSCREEN
+
+const fullscreenBtn =
+    document.getElementById(
+        "fullscreenBtn"
+    );
+
+fullscreenBtn.addEventListener(
+    "click",
+    async()=>{
+
+        if(
+            !document.fullscreenElement
+        ){
+
+            await document
+                .documentElement
+                .requestFullscreen();
+
+        }
+
+    }
+);
 
 </script>
 
