@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>KurdiBird</title>
+
+<style>
+body{
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:#70c5ce;
+}
+
+canvas{
+    border:3px solid black;
+}
+</style>
+
+</head>
+<body>
+
+<canvas id="game" width="400" height="600"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let bird = {
+    x: 100,
+    y: 250,
+    width: 30,
+    height: 30,
+    velocity: 0
+};
+
+let gravity = 0.5;
+let jump = -8;
+
+let pipes = [];
+let score = 0;
+let gameOver = false;
+
+function createPipe(){
+    let gap = 150;
+
+    let topHeight =
+        Math.random() * 250 + 50;
+
+    pipes.push({
+        x: canvas.width,
+        top: topHeight,
+        bottom: topHeight + gap,
+        passed:false
+    });
+}
+
+setInterval(()=>{
+    if(!gameOver){
+        createPipe();
+    }
+},2000);
+
+function update(){
+
+    if(gameOver) return;
+
+    bird.velocity += gravity;
+    bird.y += bird.velocity;
+
+    if(bird.y < 0){
+        bird.y = 0;
+    }
+
+    if(bird.y + bird.height > canvas.height){
+        gameOver = true;
+    }
+
+    pipes.forEach(pipe=>{
+
+        pipe.x -= 3;
+
+        if(
+            bird.x + bird.width > pipe.x &&
+            bird.x < pipe.x + 60 &&
+            (
+                bird.y < pipe.top ||
+                bird.y + bird.height > pipe.bottom
+            )
+        ){
+            gameOver = true;
+        }
+
+        if(!pipe.passed && pipe.x < bird.x){
+            score++;
+            pipe.passed = true;
+        }
+    });
+
+    pipes =
+        pipes.filter(pipe => pipe.x > -60);
+}
+
+function draw(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(
+        bird.x,
+        bird.y,
+        bird.width,
+        bird.height
+    );
+
+    ctx.fillStyle = "green";
+
+    pipes.forEach(pipe=>{
+
+        ctx.fillRect(
+            pipe.x,
+            0,
+            60,
+            pipe.top
+        );
+
+        ctx.fillRect(
+            pipe.x,
+            pipe.bottom,
+            60,
+            canvas.height-pipe.bottom
+        );
+    });
+
+    ctx.fillStyle="black";
+    ctx.font="30px Arial";
+    ctx.fillText(
+        "Score: " + score,
+        10,
+        40
+    );
+
+    if(gameOver){
+        ctx.fillStyle="red";
+        ctx.font="50px Arial";
+        ctx.fillText(
+            "Game Over",
+            65,
+            300
+        );
+    }
+}
+
+function gameLoop(){
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+document.addEventListener("keydown",e=>{
+    if(e.code === "Space"){
+        bird.velocity = jump;
+    }
+});
+
+canvas.addEventListener("click",()=>{
+    bird.velocity = jump;
+});
+
+</script>
+</body>
+</html>
