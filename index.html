@@ -8,32 +8,22 @@
 
 <style>
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#70c5ce;
-}
-
-body{
-    display:flex;
-    justify-content:center;
-    align-items:center;
 }
 
 canvas{
     display:block;
-    background:#70c5ce;
 }
 
 #fullscreenBtn{
     position:fixed;
-    bottom:20px;
-    right:20px;
-    z-index:1000;
+    right:15px;
+    bottom:15px;
 
     padding:12px 20px;
 
@@ -43,15 +33,13 @@ canvas{
     background:#007bff;
     color:white;
 
-    font-size:16px;
     font-weight:bold;
 
-    cursor:pointer;
+    z-index:1000;
 }
 
 </style>
 </head>
-
 <body>
 
 <canvas id="game"></canvas>
@@ -61,8 +49,6 @@ canvas{
 </button>
 
 <script>
-
-// CANVAS
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -81,28 +67,26 @@ window.addEventListener(
     resizeCanvas
 );
 
-// BIRD
+// ====================
+// GAME DATA
+// ====================
 
 const bird = {
-    x:100,
-    y:window.innerHeight/2,
-    width:35,
-    height:35,
+    x:120,
+    y:300,
+    width:40,
+    height:30,
     velocity:0
 };
 
 const gravity = 0.5;
 const jumpForce = -9;
 
-// GAME
-
-let pipes = [];
 let score = 0;
+let pipes = [];
 
 let gameStarted = false;
 let gameOver = false;
-
-// RESTART BUTTON
 
 const restartButton = {
     x:0,
@@ -111,20 +95,29 @@ const restartButton = {
     height:60
 };
 
-// CREATE PIPES
+// ====================
+// BACKGROUND
+// ====================
+
+let cloudOffset = 0;
+let mountainOffset = 0;
+
+// ====================
+// PIPES
+// ====================
 
 function createPipe(){
 
-    const gap = 180;
+    const gap = 200;
 
     const topHeight =
         Math.random() *
-        (canvas.height * 0.4)
-        + 50;
+        (canvas.height * 0.35)
+        + 60;
 
     pipes.push({
         x:canvas.width,
-        width:80,
+        width:90,
         top:topHeight,
         bottom:topHeight + gap,
         passed:false
@@ -138,9 +131,11 @@ setInterval(()=>{
         createPipe();
     }
 
-},2000);
+},2200);
 
-// RESET GAME
+// ====================
+// RESET
+// ====================
 
 function resetGame(){
 
@@ -156,26 +151,29 @@ function resetGame(){
 
 }
 
+// ====================
 // UPDATE
+// ====================
 
 function update(){
 
-    if(!gameStarted) return;
-    if(gameOver) return;
+    if(!gameStarted || gameOver){
+        return;
+    }
+
+    cloudOffset += 0.4;
+    mountainOffset += 1;
 
     bird.velocity += gravity;
-
     bird.y += bird.velocity;
 
     if(bird.y < 0){
-
         bird.y = 0;
-
     }
 
     if(
         bird.y + bird.height >
-        canvas.height
+        canvas.height - 80
     ){
         gameOver = true;
     }
@@ -184,18 +182,17 @@ function update(){
 
         pipe.x -= 4;
 
-        const collision =
+        const hit =
 
             bird.x + bird.width > pipe.x &&
             bird.x < pipe.x + pipe.width &&
-
             (
                 bird.y < pipe.top ||
                 bird.y + bird.height >
                 pipe.bottom
             );
 
-        if(collision){
+        if(hit){
             gameOver = true;
         }
 
@@ -210,16 +207,36 @@ function update(){
     });
 
     pipes = pipes.filter(
-        pipe => pipe.x > -pipe.width
+        pipe=>pipe.x > -pipe.width
     );
 
 }
 
-// DRAW
+// ====================
+// SKY
+// ====================
 
-function drawBackground(){
+function drawSky(){
 
-    ctx.fillStyle = "#70c5ce";
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            canvas.height
+        );
+
+    gradient.addColorStop(
+        0,
+        "#74d4ff"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#d9f7ff"
+    );
+
+    ctx.fillStyle = gradient;
 
     ctx.fillRect(
         0,
@@ -230,24 +247,246 @@ function drawBackground(){
 
 }
 
-function drawBird(){
+// ====================
+// CLOUDS
+// ====================
 
-    ctx.fillStyle = "yellow";
+function drawClouds(){
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.8)";
+
+    for(let i=0;i<8;i++){
+
+        const x =
+            ((i * 250) -
+            (cloudOffset %
+             (canvas.width + 250)));
+
+        const y =
+            50 +
+            Math.sin(i) * 60;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            25,
+            0,
+            Math.PI*2
+        );
+
+        ctx.arc(
+            x+25,
+            y-10,
+            30,
+            0,
+            Math.PI*2
+        );
+
+        ctx.arc(
+            x+55,
+            y,
+            25,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+// ====================
+// MOUNTAINS
+// ====================
+
+function drawMountains(){
+
+    ctx.fillStyle = "#7e91a8";
+
+    for(let i=0;i<12;i++){
+
+        const x =
+            ((i*220) -
+            (mountainOffset %
+             220));
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            canvas.height - 80
+        );
+
+        ctx.lineTo(
+            x + 110,
+            canvas.height - 280
+        );
+
+        ctx.lineTo(
+            x + 220,
+            canvas.height - 80
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+// ====================
+// GROUND
+// ====================
+
+function drawGround(){
+
+    ctx.fillStyle =
+        "#6ab04c";
 
     ctx.fillRect(
-        bird.x,
-        bird.y,
-        bird.width,
-        bird.height
+        0,
+        canvas.height - 80,
+        canvas.width,
+        80
     );
 
 }
 
+// ====================
+// BIRD
+// ====================
+
+function drawBird(){
+
+    const flap =
+        Math.sin(
+            Date.now()/100
+        ) * 5;
+
+    // body
+
+    ctx.fillStyle =
+        "#ffdd00";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        bird.x,
+        bird.y,
+        20,
+        15,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    // wing
+
+    ctx.fillStyle =
+        "#ffbb00";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        bird.x - 5,
+        bird.y + flap,
+        10,
+        8,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    // eye
+
+    ctx.fillStyle="white";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        bird.x+8,
+        bird.y-3,
+        5,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="black";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        bird.x+9,
+        bird.y-3,
+        2,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    // beak
+
+    ctx.fillStyle =
+        "orange";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        bird.x+18,
+        bird.y
+    );
+
+    ctx.lineTo(
+        bird.x+30,
+        bird.y-3
+    );
+
+    ctx.lineTo(
+        bird.x+18,
+        bird.y+5
+    );
+
+    ctx.fill();
+
+}
+
+// ====================
+// PIPES
+// ====================
+
 function drawPipes(){
 
-    ctx.fillStyle = "green";
-
     pipes.forEach(pipe=>{
+
+        const gradient =
+            ctx.createLinearGradient(
+                pipe.x,
+                0,
+                pipe.x+pipe.width,
+                0
+            );
+
+        gradient.addColorStop(
+            0,
+            "#34d058"
+        );
+
+        gradient.addColorStop(
+            1,
+            "#248f3d"
+        );
+
+        ctx.fillStyle = gradient;
 
         ctx.fillRect(
             pipe.x,
@@ -260,25 +499,35 @@ function drawPipes(){
             pipe.x,
             pipe.bottom,
             pipe.width,
-            canvas.height - pipe.bottom
+            canvas.height
         );
 
     });
 
 }
 
+// ====================
+// SCORE
+// ====================
+
 function drawScore(){
 
     ctx.fillStyle = "black";
-    ctx.font = "30px Arial";
+
+    ctx.font =
+        "bold 32px Arial";
 
     ctx.fillText(
         "Score: " + score,
         20,
-        45
+        50
     );
 
 }
+
+// ====================
+// START SCREEN
+// ====================
 
 function drawStartScreen(){
 
@@ -286,78 +535,87 @@ function drawStartScreen(){
         "rgba(255,255,255,0.9)";
 
     ctx.fillRect(
-        canvas.width/2 - 180,
-        canvas.height/2 - 120,
+        canvas.width/2-180,
+        canvas.height/2-120,
         360,
-        240
+        220
     );
 
-    ctx.fillStyle = "black";
+    ctx.fillStyle =
+        "black";
 
-    ctx.font = "50px Arial";
+    ctx.font =
+        "bold 48px Arial";
 
     ctx.fillText(
         "KurdiBird",
-        canvas.width/2 - 120,
-        canvas.height/2 - 30
+        canvas.width/2-120,
+        canvas.height/2-30
     );
 
-    ctx.font = "24px Arial";
+    ctx.font =
+        "22px Arial";
 
     ctx.fillText(
-        "Tap, Click or SPACE",
-        canvas.width/2 - 120,
-        canvas.height/2 + 30
+        "Tap or Press SPACE",
+        canvas.width/2-110,
+        canvas.height/2+25
     );
 
     ctx.fillText(
         "to Start",
-        canvas.width/2 - 40,
-        canvas.height/2 + 70
+        canvas.width/2-40,
+        canvas.height/2+65
     );
 
 }
 
+// ====================
+// GAME OVER
+// ====================
+
 function drawGameOver(){
 
     restartButton.x =
-        canvas.width/2 -
-        restartButton.width/2;
+        canvas.width/2-90;
 
     restartButton.y =
-        canvas.height/2 + 70;
+        canvas.height/2+80;
 
     ctx.fillStyle =
         "rgba(255,255,255,0.95)";
 
     ctx.fillRect(
-        canvas.width/2 - 200,
-        canvas.height/2 - 150,
+        canvas.width/2-200,
+        canvas.height/2-160,
         400,
-        320
+        330
     );
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle="red";
 
-    ctx.font = "48px Arial";
+    ctx.font =
+        "bold 46px Arial";
 
     ctx.fillText(
         "GAME OVER",
-        canvas.width/2 - 160,
-        canvas.height/2 - 50
+        canvas.width/2-155,
+        canvas.height/2-60
     );
 
-    ctx.fillStyle = "black";
+    ctx.fillStyle="black";
 
-    ctx.font = "30px Arial";
+    ctx.font =
+        "30px Arial";
 
     ctx.fillText(
         "Score: " + score,
-        canvas.width/2 - 70,
+        canvas.width/2-60,
         canvas.height/2
     );
 
-    ctx.fillStyle = "#007bff";
+    ctx.fillStyle =
+        "#007bff";
 
     ctx.fillRect(
         restartButton.x,
@@ -366,57 +624,70 @@ function drawGameOver(){
         restartButton.height
     );
 
-    ctx.fillStyle = "white";
+    ctx.fillStyle =
+        "white";
 
-    ctx.font = "26px Arial";
+    ctx.font =
+        "26px Arial";
 
     ctx.fillText(
         "Restart",
-        restartButton.x + 40,
-        restartButton.y + 38
+        restartButton.x+42,
+        restartButton.y+38
     );
 
 }
 
+// ====================
+// DRAW
+// ====================
+
 function draw(){
 
-    drawBackground();
+    drawSky();
+
+    drawClouds();
+
+    drawMountains();
 
     drawPipes();
+
+    drawGround();
 
     drawBird();
 
     drawScore();
 
     if(!gameStarted){
-
         drawStartScreen();
-
     }
 
     if(gameOver){
-
         drawGameOver();
-
     }
 
 }
 
+// ====================
 // LOOP
+// ====================
 
-function gameLoop(){
+function loop(){
 
     update();
-
     draw();
 
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(
+        loop
+    );
 
 }
 
-gameLoop();
+loop();
 
-// FLAP
+// ====================
+// CONTROLS
+// ====================
 
 function flap(){
 
@@ -428,19 +699,18 @@ function flap(){
 
     if(!gameOver){
 
-        bird.velocity = jumpForce;
+        bird.velocity =
+            jumpForce;
 
     }
 
 }
 
-// KEYBOARD
-
 document.addEventListener(
     "keydown",
     e=>{
 
-        if(e.code === "Space"){
+        if(e.code==="Space"){
 
             flap();
 
@@ -449,40 +719,44 @@ document.addEventListener(
     }
 );
 
-// CLICK
+function handleRestart(x,y){
+
+    if(!gameOver)
+        return false;
+
+    return(
+
+        x > restartButton.x &&
+        x <
+        restartButton.x +
+        restartButton.width &&
+
+        y > restartButton.y &&
+        y <
+        restartButton.y +
+        restartButton.height
+
+    );
+
+}
 
 canvas.addEventListener(
     "click",
     e=>{
 
-        if(gameOver){
+        const rect =
+            canvas.getBoundingClientRect();
 
-            const rect =
-                canvas.getBoundingClientRect();
+        const x =
+            e.clientX - rect.left;
 
-            const x =
-                e.clientX - rect.left;
+        const y =
+            e.clientY - rect.top;
 
-            const y =
-                e.clientY - rect.top;
+        if(handleRestart(x,y)){
 
-            if(
-
-                x > restartButton.x &&
-                x < restartButton.x +
-                restartButton.width &&
-
-                y > restartButton.y &&
-                y < restartButton.y +
-                restartButton.height
-
-            ){
-
-                resetGame();
-
-                return;
-
-            }
+            resetGame();
+            return;
 
         }
 
@@ -490,8 +764,6 @@ canvas.addEventListener(
 
     }
 );
-
-// TOUCH
 
 canvas.addEventListener(
     "touchstart",
@@ -499,37 +771,22 @@ canvas.addEventListener(
 
         e.preventDefault();
 
-        if(gameOver){
+        const touch =
+            e.touches[0];
 
-            const touch =
-                e.touches[0];
+        const rect =
+            canvas.getBoundingClientRect();
 
-            const rect =
-                canvas.getBoundingClientRect();
+        const x =
+            touch.clientX - rect.left;
 
-            const x =
-                touch.clientX - rect.left;
+        const y =
+            touch.clientY - rect.top;
 
-            const y =
-                touch.clientY - rect.top;
+        if(handleRestart(x,y)){
 
-            if(
-
-                x > restartButton.x &&
-                x < restartButton.x +
-                restartButton.width &&
-
-                y > restartButton.y &&
-                y < restartButton.y +
-                restartButton.height
-
-            ){
-
-                resetGame();
-
-                return;
-
-            }
+            resetGame();
+            return;
 
         }
 
@@ -538,28 +795,27 @@ canvas.addEventListener(
     }
 );
 
+// ====================
 // FULLSCREEN
+// ====================
 
-const fullscreenBtn =
-    document.getElementById(
-        "fullscreenBtn"
-    );
+document
+.getElementById(
+"fullscreenBtn"
+)
+.addEventListener(
+"click",
+async()=>{
 
-fullscreenBtn.addEventListener(
-    "click",
-    async()=>{
+if(!document.fullscreenElement){
 
-        if(
-            !document.fullscreenElement
-        ){
+await document
+.documentElement
+.requestFullscreen();
 
-            await document
-                .documentElement
-                .requestFullscreen();
+}
 
-        }
-
-    }
+}
 );
 
 </script>
