@@ -6,6 +6,8 @@
 
 <title>KurdiBird</title>
 
+<link rel="iconrel="apple-touch-iconcolor" content="#74d4ff">
+
 <style>
 
 html,body{
@@ -22,20 +24,21 @@ canvas{
 
 #fullscreenBtn{
     position:fixed;
-    right:15px;
     bottom:15px;
+    right:15px;
 
     padding:12px 20px;
 
     border:none;
-    border-radius:10px;
+    border-radius:12px;
 
     background:#007bff;
     color:white;
 
     font-weight:bold;
+    cursor:pointer;
 
-    z-index:1000;
+    z-index:999;
 }
 
 </style>
@@ -54,22 +57,16 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas(){
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
 }
 
 resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-// ====================
-// GAME DATA
-// ====================
+// ------------------------
+// GAME
+// ------------------------
 
 const bird = {
     x:120,
@@ -83,10 +80,20 @@ const gravity = 0.5;
 const jumpForce = -9;
 
 let score = 0;
-let pipes = [];
+
+let highScore =
+    Number(
+        localStorage.getItem(
+            "kurdibirdHighScore"
+        )
+    ) || 0;
 
 let gameStarted = false;
 let gameOver = false;
+let pipes = [];
+
+let cloudOffset = 0;
+let mountainOffset = 0;
 
 const restartButton = {
     x:0,
@@ -95,16 +102,9 @@ const restartButton = {
     height:60
 };
 
-// ====================
-// BACKGROUND
-// ====================
-
-let cloudOffset = 0;
-let mountainOffset = 0;
-
-// ====================
+// ------------------------
 // PIPES
-// ====================
+// ------------------------
 
 function createPipe(){
 
@@ -122,7 +122,6 @@ function createPipe(){
         bottom:topHeight + gap,
         passed:false
     });
-
 }
 
 setInterval(()=>{
@@ -133,36 +132,34 @@ setInterval(()=>{
 
 },2200);
 
-// ====================
+// ------------------------
 // RESET
-// ====================
+// ------------------------
 
 function resetGame(){
 
     bird.y = canvas.height / 2;
     bird.velocity = 0;
 
-    score = 0;
-
     pipes = [];
+    score = 0;
 
     gameOver = false;
     gameStarted = true;
-
 }
 
-// ====================
+// ------------------------
 // UPDATE
-// ====================
+// ------------------------
 
 function update(){
+
+    cloudOffset += 0.35;
+    mountainOffset += 1;
 
     if(!gameStarted || gameOver){
         return;
     }
-
-    cloudOffset += 0.4;
-    mountainOffset += 1;
 
     bird.velocity += gravity;
     bird.y += bird.velocity;
@@ -171,29 +168,50 @@ function update(){
         bird.y = 0;
     }
 
-    if(
-        bird.y + bird.height >
-        canvas.height - 80
-    ){
+    if(bird.y + bird.height > canvas.height - 80){
+
         gameOver = true;
+
+        if(score > highScore){
+
+            highScore = score;
+
+            localStorage.setItem(
+                "kurdibirdHighScore",
+                highScore
+            );
+
+        }
     }
 
     pipes.forEach(pipe=>{
 
         pipe.x -= 4;
 
-        const hit =
+        const collision =
 
             bird.x + bird.width > pipe.x &&
             bird.x < pipe.x + pipe.width &&
+
             (
                 bird.y < pipe.top ||
                 bird.y + bird.height >
                 pipe.bottom
             );
 
-        if(hit){
+        if(collision){
+
             gameOver = true;
+
+            if(score > highScore){
+
+                highScore = score;
+
+                localStorage.setItem(
+                    "kurdibirdHighScore",
+                    highScore
+                );
+            }
         }
 
         if(
@@ -207,36 +225,25 @@ function update(){
     });
 
     pipes = pipes.filter(
-        pipe=>pipe.x > -pipe.width
+        p=>p.x > -p.width
     );
-
 }
 
-// ====================
+// ------------------------
 // SKY
-// ====================
+// ------------------------
 
 function drawSky(){
 
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            canvas.height
-        );
-
-    gradient.addColorStop(
-        0,
-        "#74d4ff"
+    const g =
+    ctx.createLinearGradient(
+        0,0,0,canvas.height
     );
 
-    gradient.addColorStop(
-        1,
-        "#d9f7ff"
-    );
+    g.addColorStop(0,"#72d5ff");
+    g.addColorStop(1,"#e5f8ff");
 
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = g;
 
     ctx.fillRect(
         0,
@@ -244,129 +251,95 @@ function drawSky(){
         canvas.width,
         canvas.height
     );
-
 }
 
-// ====================
+// ------------------------
 // CLOUDS
-// ====================
+// ------------------------
 
 function drawClouds(){
 
     ctx.fillStyle =
-        "rgba(255,255,255,0.8)";
+        "rgba(255,255,255,0.85)";
 
     for(let i=0;i<8;i++){
 
         const x =
-            ((i * 250) -
-            (cloudOffset %
-             (canvas.width + 250)));
+        (i*250) -
+        (cloudOffset %
+        (canvas.width+250));
 
         const y =
-            50 +
-            Math.sin(i) * 60;
+        70 +
+        Math.sin(i)*55;
 
         ctx.beginPath();
-
-        ctx.arc(
-            x,
-            y,
-            25,
-            0,
-            Math.PI*2
-        );
-
-        ctx.arc(
-            x+25,
-            y-10,
-            30,
-            0,
-            Math.PI*2
-        );
-
-        ctx.arc(
-            x+55,
-            y,
-            25,
-            0,
-            Math.PI*2
-        );
-
+        ctx.arc(x,y,25,0,Math.PI*2);
+        ctx.arc(x+25,y-10,30,0,Math.PI*2);
+        ctx.arc(x+55,y,25,0,Math.PI*2);
         ctx.fill();
-
     }
-
 }
 
-// ====================
+// ------------------------
 // MOUNTAINS
-// ====================
+// ------------------------
 
 function drawMountains(){
 
-    ctx.fillStyle = "#7e91a8";
+    ctx.fillStyle = "#8090a6";
 
     for(let i=0;i<12;i++){
 
         const x =
-            ((i*220) -
-            (mountainOffset %
-             220));
+        (i*220) -
+        (mountainOffset % 220);
 
         ctx.beginPath();
 
         ctx.moveTo(
             x,
-            canvas.height - 80
+            canvas.height-80
         );
 
         ctx.lineTo(
-            x + 110,
-            canvas.height - 280
+            x+110,
+            canvas.height-280
         );
 
         ctx.lineTo(
-            x + 220,
-            canvas.height - 80
+            x+220,
+            canvas.height-80
         );
 
         ctx.fill();
-
     }
-
 }
 
-// ====================
+// ------------------------
 // GROUND
-// ====================
+// ------------------------
 
 function drawGround(){
 
-    ctx.fillStyle =
-        "#6ab04c";
+    ctx.fillStyle = "#5cb85c";
 
     ctx.fillRect(
         0,
-        canvas.height - 80,
+        canvas.height-80,
         canvas.width,
         80
     );
-
 }
 
-// ====================
+// ------------------------
 // BIRD
-// ====================
+// ------------------------
 
 function drawBird(){
 
     const flap =
-        Math.sin(
-            Date.now()/100
-        ) * 5;
-
-    // body
+    Math.sin(Date.now()/100)*5;
 
     ctx.fillStyle =
         "#ffdd00";
@@ -385,16 +358,14 @@ function drawBird(){
 
     ctx.fill();
 
-    // wing
-
     ctx.fillStyle =
         "#ffbb00";
 
     ctx.beginPath();
 
     ctx.ellipse(
-        bird.x - 5,
-        bird.y + flap,
+        bird.x-5,
+        bird.y+flap,
         10,
         8,
         0,
@@ -403,8 +374,6 @@ function drawBird(){
     );
 
     ctx.fill();
-
-    // eye
 
     ctx.fillStyle="white";
 
@@ -434,10 +403,7 @@ function drawBird(){
 
     ctx.fill();
 
-    // beak
-
-    ctx.fillStyle =
-        "orange";
+    ctx.fillStyle="orange";
 
     ctx.beginPath();
 
@@ -448,7 +414,7 @@ function drawBird(){
 
     ctx.lineTo(
         bird.x+30,
-        bird.y-3
+        bird.y-4
     );
 
     ctx.lineTo(
@@ -457,36 +423,35 @@ function drawBird(){
     );
 
     ctx.fill();
-
 }
 
-// ====================
+// ------------------------
 // PIPES
-// ====================
+// ------------------------
 
 function drawPipes(){
 
     pipes.forEach(pipe=>{
 
-        const gradient =
-            ctx.createLinearGradient(
-                pipe.x,
-                0,
-                pipe.x+pipe.width,
-                0
-            );
-
-        gradient.addColorStop(
+        const g =
+        ctx.createLinearGradient(
+            pipe.x,
             0,
-            "#34d058"
+            pipe.x + pipe.width,
+            0
         );
 
-        gradient.addColorStop(
+        g.addColorStop(
+            0,
+            "#46e46a"
+        );
+
+        g.addColorStop(
             1,
-            "#248f3d"
+            "#228b3f"
         );
 
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = g;
 
         ctx.fillRect(
             pipe.x,
@@ -501,121 +466,201 @@ function drawPipes(){
             pipe.width,
             canvas.height
         );
-
     });
-
 }
 
-// ====================
+// ------------------------
 // SCORE
-// ====================
+// ------------------------
 
 function drawScore(){
 
-    ctx.fillStyle = "black";
+    if(!gameStarted) return;
 
-    ctx.font =
-        "bold 32px Arial";
+    ctx.fillStyle="black";
+
+    ctx.font=
+    "bold 32px Arial";
 
     ctx.fillText(
         "Score: " + score,
         20,
         50
     );
-
 }
 
-// ====================
+// ------------------------
 // START SCREEN
-// ====================
+// ------------------------
 
 function drawStartScreen(){
 
     ctx.fillStyle =
-        "rgba(255,255,255,0.9)";
+        "rgba(0,0,0,0.25)";
 
     ctx.fillRect(
-        canvas.width/2-180,
-        canvas.height/2-120,
-        360,
-        220
+        0,
+        0,
+        canvas.width,
+        canvas.height
     );
+
+    const floatY =
+    Math.sin(
+        Date.now()/300
+    ) * 15;
+
+    ctx.save();
+
+    ctx.translate(
+        canvas.width/2,
+        canvas.height/2 - 180 + floatY
+    );
+
+    ctx.fillStyle="#ffdd00";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        0,
+        0,
+        35,
+        25,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="orange";
+
+    ctx.beginPath();
+    ctx.moveTo(30,0);
+    ctx.lineTo(50,-5);
+    ctx.lineTo(30,8);
+    ctx.fill();
+
+    ctx.restore();
+
+    ctx.textAlign="center";
+
+    ctx.fillStyle="white";
+
+    ctx.font="bold 64px Arial";
+
+    ctx.fillText(
+        "KURDIBIRD",
+        canvas.width/2,
+        canvas.height/2 - 60
+    );
+
+    ctx.font="24px Arial";
+
+    ctx.fillText(
+        "Fly Through The Mountains",
+        canvas.width/2,
+        canvas.height/2 - 10
+    );
+
+    const btnWidth = 260;
+    const btnHeight = 70;
+
+    const btnX =
+    canvas.width/2 -
+    btnWidth/2;
+
+    const btnY =
+    canvas.height/2 + 45;
 
     ctx.fillStyle =
-        "black";
+    "#2ecc71";
 
-    ctx.font =
-        "bold 48px Arial";
+    ctx.beginPath();
 
-    ctx.fillText(
-        "KurdiBird",
-        canvas.width/2-120,
-        canvas.height/2-30
+    ctx.roundRect(
+        btnX,
+        btnY,
+        btnWidth,
+        btnHeight,
+        15
     );
 
-    ctx.font =
-        "22px Arial";
+    ctx.fill();
+
+    ctx.fillStyle="white";
+
+    ctx.font=
+    "bold 32px Arial";
 
     ctx.fillText(
-        "Tap or Press SPACE",
-        canvas.width/2-110,
-        canvas.height/2+25
+        "PLAY NOW ▶",
+        canvas.width/2,
+        btnY + 47
     );
+
+    ctx.font="22px Arial";
 
     ctx.fillText(
-        "to Start",
-        canvas.width/2-40,
-        canvas.height/2+65
+        "High Score: " + highScore,
+        canvas.width/2,
+        btnY + 115
     );
 
+    ctx.textAlign="left";
 }
 
-// ====================
+// ------------------------
 // GAME OVER
-// ====================
+// ------------------------
 
 function drawGameOver(){
 
     restartButton.x =
-        canvas.width/2-90;
+    canvas.width/2 - 90;
 
     restartButton.y =
-        canvas.height/2+80;
+    canvas.height/2 + 90;
 
     ctx.fillStyle =
-        "rgba(255,255,255,0.95)";
+    "rgba(255,255,255,0.95)";
 
     ctx.fillRect(
-        canvas.width/2-200,
-        canvas.height/2-160,
-        400,
-        330
+        canvas.width/2-210,
+        canvas.height/2-170,
+        420,
+        340
     );
 
     ctx.fillStyle="red";
 
-    ctx.font =
-        "bold 46px Arial";
+    ctx.font=
+    "bold 48px Arial";
 
     ctx.fillText(
         "GAME OVER",
         canvas.width/2-155,
-        canvas.height/2-60
+        canvas.height/2-70
     );
 
     ctx.fillStyle="black";
 
-    ctx.font =
-        "30px Arial";
+    ctx.font=
+    "30px Arial";
 
     ctx.fillText(
         "Score: " + score,
         canvas.width/2-60,
-        canvas.height/2
+        canvas.height/2-10
     );
 
-    ctx.fillStyle =
-        "#007bff";
+    ctx.fillText(
+        "Best: " + highScore,
+        canvas.width/2-55,
+        canvas.height/2+40
+    );
+
+    ctx.fillStyle="#007bff";
 
     ctx.fillRect(
         restartButton.x,
@@ -624,38 +669,29 @@ function drawGameOver(){
         restartButton.height
     );
 
-    ctx.fillStyle =
-        "white";
+    ctx.fillStyle="white";
 
-    ctx.font =
-        "26px Arial";
+    ctx.font="26px Arial";
 
     ctx.fillText(
         "Restart",
         restartButton.x+42,
         restartButton.y+38
     );
-
 }
 
-// ====================
+// ------------------------
 // DRAW
-// ====================
+// ------------------------
 
 function draw(){
 
     drawSky();
-
     drawClouds();
-
     drawMountains();
-
     drawPipes();
-
     drawGround();
-
     drawBird();
-
     drawScore();
 
     if(!gameStarted){
@@ -665,79 +701,54 @@ function draw(){
     if(gameOver){
         drawGameOver();
     }
-
 }
-
-// ====================
-// LOOP
-// ====================
 
 function loop(){
 
     update();
     draw();
 
-    requestAnimationFrame(
-        loop
-    );
-
+    requestAnimationFrame(loop);
 }
 
 loop();
 
-// ====================
+// ------------------------
 // CONTROLS
-// ====================
+// ------------------------
 
 function flap(){
 
     if(!gameStarted){
-
         gameStarted = true;
-
     }
 
     if(!gameOver){
-
-        bird.velocity =
-            jumpForce;
-
+        bird.velocity = jumpForce;
     }
-
 }
 
 document.addEventListener(
     "keydown",
     e=>{
-
         if(e.code==="Space"){
-
             flap();
-
         }
-
     }
 );
 
 function handleRestart(x,y){
 
-    if(!gameOver)
-        return false;
+    if(!gameOver) return false;
 
-    return(
+    return (
 
         x > restartButton.x &&
-        x <
-        restartButton.x +
-        restartButton.width &&
+        x < restartButton.x + restartButton.width &&
 
         y > restartButton.y &&
-        y <
-        restartButton.y +
-        restartButton.height
-
+        y < restartButton.y + restartButton.height
     );
-
 }
 
 canvas.addEventListener(
@@ -745,23 +756,20 @@ canvas.addEventListener(
     e=>{
 
         const rect =
-            canvas.getBoundingClientRect();
+        canvas.getBoundingClientRect();
 
         const x =
-            e.clientX - rect.left;
+        e.clientX - rect.left;
 
         const y =
-            e.clientY - rect.top;
+        e.clientY - rect.top;
 
         if(handleRestart(x,y)){
-
             resetGame();
             return;
-
         }
 
         flap();
-
     }
 );
 
@@ -772,50 +780,46 @@ canvas.addEventListener(
         e.preventDefault();
 
         const touch =
-            e.touches[0];
+        e.touches[0];
 
         const rect =
-            canvas.getBoundingClientRect();
+        canvas.getBoundingClientRect();
 
         const x =
-            touch.clientX - rect.left;
+        touch.clientX - rect.left;
 
         const y =
-            touch.clientY - rect.top;
+        touch.clientY - rect.top;
 
         if(handleRestart(x,y)){
-
             resetGame();
             return;
-
         }
 
         flap();
-
     }
 );
 
-// ====================
+// ------------------------
 // FULLSCREEN
-// ====================
+// ------------------------
 
 document
 .getElementById(
-"fullscreenBtn"
+    "fullscreenBtn"
 )
 .addEventListener(
-"click",
-async()=>{
+    "click",
+    async()=>{
 
-if(!document.fullscreenElement){
-
-await document
-.documentElement
-.requestFullscreen();
-
-}
-
-}
+        if(
+            !document.fullscreenElement
+        ){
+            await document
+            .documentElement
+            .requestFullscreen();
+        }
+    }
 );
 
 </script>
