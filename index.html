@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>KurdiBird</title>
 
 <style>
@@ -12,14 +14,16 @@ body{
     align-items:center;
     height:100vh;
     background:#70c5ce;
+    overflow:hidden;
 }
 
 canvas{
     border:3px solid black;
+    background:skyblue;
 }
 </style>
-
 </head>
+
 <body>
 
 <canvas id="game" width="400" height="600"></canvas>
@@ -29,44 +33,71 @@ canvas{
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-let bird = {
-    x: 100,
-    y: 250,
-    width: 30,
-    height: 30,
-    velocity: 0
+const bird = {
+    x:100,
+    y:250,
+    width:30,
+    height:30,
+    velocity:0
 };
 
-let gravity = 0.5;
-let jump = -8;
+const gravity = 0.5;
+const jumpForce = -8;
 
 let pipes = [];
 let score = 0;
+let gameStarted = false;
 let gameOver = false;
 
-function createPipe(){
-    let gap = 150;
+const restartButton = {
+    x:130,
+    y:340,
+    width:140,
+    height:50
+};
 
-    let topHeight =
+function createPipe(){
+
+    const gap = 150;
+
+    const topHeight =
         Math.random() * 250 + 50;
 
     pipes.push({
-        x: canvas.width,
-        top: topHeight,
-        bottom: topHeight + gap,
+        x:canvas.width,
+        width:60,
+        top:topHeight,
+        bottom:topHeight + gap,
         passed:false
     });
 }
 
 setInterval(()=>{
-    if(!gameOver){
+
+    if(gameStarted && !gameOver){
         createPipe();
     }
+
 },2000);
+
+function resetGame(){
+
+    bird.y = 250;
+    bird.velocity = 0;
+
+    pipes = [];
+
+    score = 0;
+
+    gameOver = false;
+    gameStarted = true;
+}
 
 function update(){
 
-    if(gameOver) return;
+    if(!gameStarted || gameOver){
+        return;
+    }
 
     bird.velocity += gravity;
     bird.y += bird.velocity;
@@ -83,14 +114,15 @@ function update(){
 
         pipe.x -= 3;
 
-        if(
+        const collision =
             bird.x + bird.width > pipe.x &&
-            bird.x < pipe.x + 60 &&
+            bird.x < pipe.x + pipe.width &&
             (
                 bird.y < pipe.top ||
                 bird.y + bird.height > pipe.bottom
-            )
-        ){
+            );
+
+        if(collision){
             gameOver = true;
         }
 
@@ -98,28 +130,36 @@ function update(){
             score++;
             pipe.passed = true;
         }
+
     });
 
-    pipes =
-        pipes.filter(pipe => pipe.x > -60);
+    pipes = pipes.filter(pipe => pipe.x > -60);
 }
 
-function draw(){
+function drawBackground(){
 
-    ctx.clearRect(
+    ctx.fillStyle = "#70c5ce";
+    ctx.fillRect(
         0,
         0,
         canvas.width,
         canvas.height
     );
+}
+
+function drawBird(){
 
     ctx.fillStyle = "yellow";
+
     ctx.fillRect(
         bird.x,
         bird.y,
         bird.width,
         bird.height
     );
+}
+
+function drawPipes(){
 
     ctx.fillStyle = "green";
 
@@ -128,55 +168,188 @@ function draw(){
         ctx.fillRect(
             pipe.x,
             0,
-            60,
+            pipe.width,
             pipe.top
         );
 
         ctx.fillRect(
             pipe.x,
             pipe.bottom,
-            60,
-            canvas.height-pipe.bottom
+            pipe.width,
+            canvas.height - pipe.bottom
         );
-    });
 
-    ctx.fillStyle="black";
-    ctx.font="30px Arial";
+    });
+}
+
+function drawScore(){
+
+    ctx.fillStyle = "black";
+    ctx.font = "30px Arial";
+
     ctx.fillText(
         "Score: " + score,
         10,
         40
     );
+}
+
+function drawStartScreen(){
+
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.fillRect(40,150,320,220);
+
+    ctx.fillStyle = "black";
+    ctx.font = "48px Arial";
+    ctx.fillText(
+        "KurdiBird",
+        65,
+        220
+    );
+
+    ctx.font = "24px Arial";
+    ctx.fillText(
+        "Press SPACE",
+        115,
+        290
+    );
+
+    ctx.fillText(
+        "or Click To Start",
+        90,
+        330
+    );
+}
+
+function drawGameOverScreen(){
+
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fillRect(40,160,320,280);
+
+    ctx.fillStyle = "red";
+    ctx.font = "42px Arial";
+    ctx.fillText(
+        "GAME OVER",
+        55,
+        230
+    );
+
+    ctx.fillStyle = "black";
+    ctx.font = "30px Arial";
+    ctx.fillText(
+        "Score: " + score,
+        120,
+        290
+    );
+
+    ctx.fillStyle = "#007bff";
+
+    ctx.fillRect(
+        restartButton.x,
+        restartButton.y,
+        restartButton.width,
+        restartButton.height
+    );
+
+    ctx.fillStyle = "white";
+    ctx.font = "25px Arial";
+    ctx.fillText(
+        "Restart",
+        145,
+        373
+    );
+}
+
+function draw(){
+
+    drawBackground();
+
+    drawPipes();
+
+    drawBird();
+
+    drawScore();
+
+    if(!gameStarted){
+        drawStartScreen();
+    }
 
     if(gameOver){
-        ctx.fillStyle="red";
-        ctx.font="50px Arial";
-        ctx.fillText(
-            "Game Over",
-            65,
-            300
-        );
+        drawGameOverScreen();
     }
+
 }
 
 function gameLoop(){
+
     update();
+
     draw();
+
     requestAnimationFrame(gameLoop);
+
 }
 
 gameLoop();
 
-document.addEventListener("keydown",e=>{
-    if(e.code === "Space"){
-        bird.velocity = jump;
+document.addEventListener("keydown",(e)=>{
+
+    if(e.code !== "Space"){
+        return;
     }
+
+    if(!gameStarted){
+
+        gameStarted = true;
+        bird.velocity = jumpForce;
+        return;
+
+    }
+
+    if(!gameOver){
+        bird.velocity = jumpForce;
+    }
+
 });
 
-canvas.addEventListener("click",()=>{
-    bird.velocity = jump;
+canvas.addEventListener("click",(e)=>{
+
+    if(!gameStarted){
+
+        gameStarted = true;
+        bird.velocity = jumpForce;
+        return;
+    }
+
+    if(gameOver){
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const mouseX =
+            e.clientX - rect.left;
+
+        const mouseY =
+            e.clientY - rect.top;
+
+        const insideButton =
+            mouseX > restartButton.x &&
+            mouseX < restartButton.x + restartButton.width &&
+            mouseY > restartButton.y &&
+            mouseY < restartButton.y + restartButton.height;
+
+        if(insideButton){
+            resetGame();
+        }
+
+        return;
+    }
+
+    bird.velocity = jumpForce;
+
 });
 
 </script>
+
 </body>
 </html>
