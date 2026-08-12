@@ -31,9 +31,8 @@ export class KurdiBirdScene extends Phaser.Scene {
 
     this.physics.add.overlap(this.birdBody, this.pipes, () => this.endRun());
     this.physics.add.overlap(this.birdBody, this.scoreZone, (_bird, zone) => {
-      const scored = zone as Phaser.GameObjects.Rectangle & { scored?: boolean };
-      if (!scored.scored) {
-        scored.scored = true;
+      if (!zone.getData('scored')) {
+        zone.setData('scored', true);
         this.state.scorePoint();
         this.emitState();
         this.flashScore();
@@ -148,7 +147,7 @@ export class KurdiBirdScene extends Phaser.Scene {
     (bottom.body as Phaser.Physics.Arcade.Body).setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
 
     const zone = this.add.rectangle(x + PIPE_WIDTH / 2 + 18, gapY, 20, PIPE_GAP, 0xffffff, 0);
-    zone.scored = false;
+    zone.setData('scored', false);
     this.physics.add.existing(zone);
     const zoneBody = zone.body as Phaser.Physics.Arcade.Body;
     zoneBody.setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
