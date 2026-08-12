@@ -128,7 +128,7 @@ export class KurdiBirdScene extends Phaser.Scene {
 
     this.birdVisual.add([body, this.wing, eye, pupil, beak, scarf]);
 
-    this.birdBody = this.add.arc(BIRD_X, HEIGHT * 0.48, BIRD_RADIUS * 2, BIRD_RADIUS * 2, 0, 360, false, 0xffffff, 0).setDepth(4);
+    this.birdBody = this.add.circle(BIRD_X, HEIGHT * 0.48, BIRD_RADIUS, 0xffffff, 0).setDepth(4) as Phaser.GameObjects.Arc;
     this.physics.add.existing(this.birdBody);
     const physicsBody = this.birdBody.body as Phaser.Physics.Arcade.Body;
     physicsBody
