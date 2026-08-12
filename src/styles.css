@@ -42,6 +42,31 @@ button { font: inherit; }
 .hud-score { font-size: clamp(42px, 8vw, 72px); font-weight: 900; line-height: .9; }
 .hud-best { margin-top: 8px; font-size: 11px; font-weight: 800; letter-spacing: .18em; opacity: .85; }
 
+.reset-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255,248,231,.4);
+  border-radius: 50%;
+  background: rgba(23,43,58,.72);
+  color: var(--cream);
+  font-size: 24px;
+  line-height: 1;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  backdrop-filter: blur(8px);
+}
+
+.reset-button.visible { display: flex; }
+.reset-button:hover { filter: brightness(1.08); transform: none; }
+.reset-button:active { transform: scale(.95); }
+
 .overlay-card {
   position: absolute;
   left: 50%;
@@ -84,4 +109,5 @@ button:active { transform: translateY(1px) scale(.99); }
 @media (max-width: 560px) {
   .overlay-card { padding: 28px 22px 22px; border-radius: 24px; }
   .hud-score { font-size: 54px; }
+  .reset-button { width: 40px; height: 40px; font-size: 21px; }
 }
