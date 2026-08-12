@@ -10,6 +10,7 @@ const finalScore = document.getElementById('final-score')!;
 const finalBest = document.getElementById('final-best')!;
 const startButton = document.getElementById('start-button')!;
 const restartButton = document.getElementById('restart-button')!;
+const resetButton = document.getElementById('reset-button')!;
 
 const scene = new KurdiBirdScene();
 const game = new Phaser.Game({
@@ -35,11 +36,17 @@ const game = new Phaser.Game({
 const begin = (): void => {
   menu.classList.add('hidden');
   gameOver.classList.add('hidden');
+  resetButton.classList.add('visible');
   scene.startRun();
 };
 
 startButton.addEventListener('click', begin);
 restartButton.addEventListener('click', begin);
+resetButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  begin();
+});
 
 scene.events.on('state-changed', (state: { phase: string; score: number; bestScore: number }) => {
   score.textContent = String(state.score);
@@ -50,11 +57,14 @@ scene.events.on('state-changed', (state: { phase: string; score: number; bestSco
   if (state.phase === 'menu') {
     menu.classList.remove('hidden');
     gameOver.classList.add('hidden');
+    resetButton.classList.remove('visible');
   } else if (state.phase === 'playing') {
     menu.classList.add('hidden');
     gameOver.classList.add('hidden');
+    resetButton.classList.add('visible');
   } else if (state.phase === 'gameover') {
     gameOver.classList.remove('hidden');
+    resetButton.classList.add('visible');
   }
 });
 
