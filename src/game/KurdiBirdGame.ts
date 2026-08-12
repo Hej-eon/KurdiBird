@@ -13,7 +13,7 @@ const GRAVITY = 980;
 const FLAP_VELOCITY = -350;
 
 export class KurdiBirdScene extends Phaser.Scene {
-  private birdBody!: Phaser.GameObjects.Arc;
+  private birdBody!: Phaser.GameObjects.Ellipse;
   private birdVisual!: Phaser.GameObjects.Container;
   private wing!: Phaser.GameObjects.Ellipse;
   private pipes!: Phaser.Physics.Arcade.Group;
@@ -128,7 +128,7 @@ export class KurdiBirdScene extends Phaser.Scene {
 
     this.birdVisual.add([body, this.wing, eye, pupil, beak, scarf]);
 
-    this.birdBody = this.add.circle(BIRD_X, HEIGHT * 0.48, BIRD_RADIUS, 0xffffff, 0).setDepth(4) as Phaser.GameObjects.Arc;
+    this.birdBody = this.add.ellipse(BIRD_X, HEIGHT * 0.48, BIRD_RADIUS * 2, BIRD_RADIUS * 2, 0xffffff, 0).setDepth(4);
     this.physics.add.existing(this.birdBody);
     const physicsBody = this.birdBody.body as Phaser.Physics.Arcade.Body;
     physicsBody
