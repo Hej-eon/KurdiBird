@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><g stroke="#172B3A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<!-- compact tail fan -->
+<path d="M35 58 C22 48 12 47 5 51 C12 58 22 61 37 63 Z" fill="#E10600"/>
+<path d="M36 62 C23 62 14 67 10 74 C20 74 30 71 42 66 Z" fill="#FFD23F"/>
+<path d="M39 65 C29 70 24 77 25 83 C34 81 42 75 47 68 Z" fill="#109647"/>
+<!-- body -->
+<path d="M34 34 C40 16 59 7 82 9 C105 10 124 22 128 41 C132 60 120 77 98 84 C75 91 49 84 35 70 C25 58 24 44 34 34 Z" fill="#FFD23F"/>
+<!-- three head tufts -->
+<path d="M61 14 L67 2 L75 15 Z" fill="#FFD23F"/>
+<path d="M76 12 L86 1 L90 14 Z" fill="#FFD23F"/>
+<path d="M91 15 L101 6 L100 20 Z" fill="#FFD23F"/>
+<!-- BIG WING DOWN, unmistakably on the body -->
+<path d="M53 44 C39 43 29 48 29 57 C30 70 41 80 54 83 C65 83 74 75 77 63 C74 52 66 46 53 44 Z" fill="#8F1D28"/>
+<path d="M54 47 C42 48 34 54 36 62 C40 72 50 78 60 78 C68 75 73 68 73 60 C69 51 63 48 54 47 Z" fill="#E10600"/>
+<path d="M55 54 C47 58 44 66 48 73 C54 75 61 72 65 65 C64 59 61 55 55 54 Z" fill="#F04A4A"/>
+<!-- green scallop accent -->
+<path d="M42 48 C49 49 55 53 59 59 C62 63 67 63 71 60 C67 52 60 47 51 44 Z" fill="#109647" stroke-width="3"/>
+<!-- motif -->
+<path d="M75 69 L84 78 L75 87 L66 78 Z" fill="#E10600" stroke-width="2"/>
+<path d="M75 74 L79 78 L75 82 L71 78 Z" fill="#109647" stroke-width="1.5"/>
+<!-- eye -->
+<circle cx="101" cy="34" r="13" fill="#FFF7E6"/>
+<circle cx="106" cy="35" r="5.5" fill="#20180F" stroke="none"/>
+<circle cx="108" cy="32" r="2" fill="#FFFFFF" stroke="none"/>
+<!-- beak -->
+<path d="M126 39 L151 49 L126 59 Z" fill="#FB8C00"/>
+<path d="M126 49 L146 51" fill="none" stroke="#C66A00" stroke-width="2"/>
+</g></svg>
