@@ -12,7 +12,30 @@ const startButton = document.getElementById('start-button')!;
 const restartButton = document.getElementById('restart-button')!;
 const resetButton = document.getElementById('reset-button')!;
 
-const scene = new KurdiBirdScene();
+type GameStateView = { phase: string; score: number; bestScore: number };
+
+const updateUI = (state: GameStateView): void => {
+  score.textContent = String(state.score);
+  bestScore.textContent = String(state.bestScore);
+  finalScore.textContent = String(state.score);
+  finalBest.textContent = String(state.bestScore);
+
+  if (state.phase === 'menu') {
+    menu.classList.remove('hidden');
+    gameOver.classList.add('hidden');
+    resetButton.classList.remove('visible');
+  } else if (state.phase === 'playing') {
+    menu.classList.add('hidden');
+    gameOver.classList.add('hidden');
+    resetButton.classList.add('visible');
+  } else if (state.phase === 'gameover') {
+    menu.classList.add('hidden');
+    gameOver.classList.remove('hidden');
+    resetButton.classList.add('visible');
+  }
+};
+
+const scene = new KurdiBirdScene(updateUI);
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
@@ -46,26 +69,6 @@ resetButton.addEventListener('click', (event) => {
   event.preventDefault();
   event.stopPropagation();
   begin();
-});
-
-scene.events.on('state-changed', (state: { phase: string; score: number; bestScore: number }) => {
-  score.textContent = String(state.score);
-  bestScore.textContent = String(state.bestScore);
-  finalScore.textContent = String(state.score);
-  finalBest.textContent = String(state.bestScore);
-
-  if (state.phase === 'menu') {
-    menu.classList.remove('hidden');
-    gameOver.classList.add('hidden');
-    resetButton.classList.remove('visible');
-  } else if (state.phase === 'playing') {
-    menu.classList.add('hidden');
-    gameOver.classList.add('hidden');
-    resetButton.classList.add('visible');
-  } else if (state.phase === 'gameover') {
-    gameOver.classList.remove('hidden');
-    resetButton.classList.add('visible');
-  }
 });
 
 window.addEventListener('resize', () => game.scale.refresh());
