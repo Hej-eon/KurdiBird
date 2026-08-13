@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 110">
+<g stroke="#20180F" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+  <!-- tail: three long clean feathers -->
+  <path d="M44 63 C27 49 13 47 5 54 C18 64 28 68 47 70 Z" fill="#E10600"/>
+  <path d="M45 70 C26 67 14 72 9 82 C25 84 36 80 51 73 Z" fill="#FFD23F"/>
+  <path d="M49 75 C34 80 27 88 28 97 C42 93 51 85 58 77 Z" fill="#109647"/>
+
+  <!-- horizontal golden body -->
+  <path d="M42 36 C50 18 72 10 97 13 C122 16 139 31 142 50 C145 69 133 87 111 93 C83 100 55 89 43 73 C35 62 35 47 42 36 Z" fill="#FFD23F"/>
+
+  <!-- three soft crest feathers -->
+  <path d="M73 18 L80 5 L89 19 Z" fill="#FFD23F"/>
+  <path d="M87 16 L99 4 L103 20 Z" fill="#FFD23F"/>
+  <path d="M100 19 L114 10 L111 25 Z" fill="#FFD23F"/>
+
+  <!-- BIG BOLD WING: intentionally dominates the silhouette -->
+  <path d="M55 56 C35 38 22 33 20 42 C20 54 30 65 48 72 C60 77 70 73 77 65 Z" fill="#B91C1C"/>
+  <path d="M60 59 C42 45 29 47 28 57 C31 68 42 77 56 78 C67 79 75 71 80 62 Z" fill="#E10600"/>
+  <path d="M65 62 C52 63 45 72 50 82 C61 82 72 76 80 66 Z" fill="#D63B43"/>
+  <!-- green scallop strip on wing -->
+  <path d="M49 44 C56 47 62 52 66 57 C71 62 77 64 84 61 C80 51 71 45 61 41 Z" fill="#109647" stroke-width="3"/>
+
+  <!-- expressive eye -->
+  <circle cx="118" cy="39" r="16" fill="#FFF7E6"/>
+  <circle cx="123" cy="41" r="7" fill="#20180F" stroke="none"/>
+  <circle cx="126" cy="37" r="2.5" fill="#FFFFFF" stroke="none"/>
+
+  <!-- beak -->
+  <path d="M137 43 L170 56 L137 67 Z" fill="#FB8C00"/>
+  <path d="M138 56 L165 58" fill="none" stroke="#C66A00" stroke-width="3"/>
+
+  <!-- textile diamond -->
+  <path d="M73 78 L84 89 L73 100 L62 89 Z" fill="#E10600" stroke-width="3"/>
+  <path d="M73 84 L79 89 L73 94 L67 89 Z" fill="#109647" stroke-width="2"/>
+</g>
+</svg>
