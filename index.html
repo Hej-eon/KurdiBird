@@ -22,12 +22,12 @@
         <button id="start-button" type="button">Start Flying</button>
         <p class="controls">Space / click / tap to flap</p>
       </section>
-      <section id="game-over" class="overlay-card hidden">
-        <p class="eyebrow">THE JOURNEY ENDS</p>
-        <h2>Nice flight.</h2>
+      <section id="game-over" class="overlay-card hidden" aria-live="assertive">
+        <p class="eyebrow">FLIGHT OVER</p>
+        <h2>GAME OVER</h2>
         <div class="results"><span>SCORE</span><strong id="final-score">0</strong></div>
         <div class="results"><span>BEST</span><strong id="final-best">0</strong></div>
-        <button id="restart-button" type="button">Fly Again</button>
+        <button id="restart-button" type="button">Restart</button>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>
