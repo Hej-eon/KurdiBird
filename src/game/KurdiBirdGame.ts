@@ -6,6 +6,8 @@ const HEIGHT = 800;
 const GROUND_Y = 735;
 const BIRD_X = 142;
 const BIRD_RADIUS = 15;
+const BIRD_WIDTH = 62;
+const BIRD_HEIGHT = 39;
 const PIPE_WIDTH = 76;
 const PIPE_GAP = 225;
 const PIPE_SPEED = 165;
@@ -28,8 +30,7 @@ interface PipePair {
 export class KurdiBirdScene extends Phaser.Scene {
   private birdBody!: Phaser.GameObjects.Ellipse;
   private birdVisual!: Phaser.GameObjects.Container;
-  private wing!: Phaser.GameObjects.Container;
-  private beak!: Phaser.GameObjects.Triangle;
+  private birdSprite!: Phaser.GameObjects.Image;
   private pipes!: Phaser.GameObjects.Group;
   private pipePairs: PipePair[] = [];
   private state = new GameStateStore();
@@ -39,6 +40,13 @@ export class KurdiBirdScene extends Phaser.Scene {
   constructor(onStateChange?: (state: GameStateView) => void) {
     super('game');
     this.onStateChange = onStateChange;
+  }
+
+  preload(): void {
+    this.load.svg('kurdi-bird', 'assets/kurdi-bird.svg', {
+      width: 160,
+      height: 100,
+    });
   }
 
   create(): void {
@@ -62,8 +70,6 @@ export class KurdiBirdScene extends Phaser.Scene {
     this.birdVisual.setPosition(BIRD_X, HEIGHT * 0.48);
     this.birdVisual.rotation = 0;
     this.birdVisual.scale = 1;
-    this.wing.rotation = -0.22;
-    this.beak.scaleX = 1;
 
     const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
     body.reset(BIRD_X, HEIGHT * 0.48);
@@ -77,15 +83,13 @@ export class KurdiBirdScene extends Phaser.Scene {
 
     this.birdVisual.setPosition(this.birdBody.x, this.birdBody.y);
     if (this.state.value.phase !== 'playing') {
-      const idleBob = Math.sin(time / 240) * 4;
-      this.birdVisual.y += idleBob;
+      this.birdVisual.y += Math.sin(time / 240) * 4;
       return;
     }
 
     const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
     if (body.velocity.y > MAX_FALL_SPEED) body.setVelocityY(MAX_FALL_SPEED);
     this.birdVisual.rotation = Phaser.Math.Clamp(body.velocity.y / 820, -0.42, 0.7);
-    this.beak.rotation = Phaser.Math.Clamp(body.velocity.y / 1600, -0.03, 0.12);
 
     if (time >= this.nextPipeAt) {
       this.spawnPipePair();
@@ -165,63 +169,10 @@ export class KurdiBirdScene extends Phaser.Scene {
 
   private createBird(): void {
     this.birdVisual = this.add.container(BIRD_X, HEIGHT * 0.48).setDepth(5);
-
-    // Bold concept, simplified for reliable rendering: golden body, strong red wing,
-    // restrained green accents, large eye, and a clean silhouette.
-    const tailGold = this.add.ellipse(-21, 5, 22, 14, 0xe1ad39)
-      .setRotation(-0.05)
-      .setStrokeStyle(2, 0x8f6c18);
-    const tailRed = this.add.ellipse(-27, 1, 19, 10, 0xd94a4a)
-      .setRotation(-0.15)
-      .setStrokeStyle(2, 0x8d2b34);
-    const tailGreen = this.add.ellipse(-27, 10, 18, 9, 0x5c9b69)
-      .setRotation(0.12)
-      .setStrokeStyle(1.5, 0x365d40);
-
-    const body = this.add.ellipse(0, 0, 48, 36, 0xf4c95d)
-      .setStrokeStyle(3, 0x172b3a);
-
-    this.wing = this.add.container(-9, 7).setSize(30, 37);
-    const wingBack = this.add.ellipse(-3, 4, 25, 36, 0xb62f39)
-      .setRotation(-0.1)
-      .setStrokeStyle(2, 0x7a2230);
-    const wingMid = this.add.ellipse(1, 0, 24, 32, 0xd94a4a)
-      .setRotation(-0.15)
-      .setStrokeStyle(2, 0x8d2b34);
-    const wingAccent = this.add.ellipse(6, -1, 15, 10, 0x5c9b69)
-      .setRotation(-0.12)
-      .setStrokeStyle(1.5, 0x365d40);
-    this.wing.add([wingBack, wingMid, wingAccent]);
-
-    // One small textile-inspired mark, kept separate from the wing for clarity.
-    const textileMark = this.add.rectangle(-7, 11, 9, 9, 0xd94a4a)
-      .setRotation(0.785)
-      .setStrokeStyle(1.5, 0x8d2b34);
-    const textileCore = this.add.rectangle(-7, 11, 4, 4, 0x5c9b69)
-      .setRotation(0.785);
-
-    const eyeRing = this.add.circle(14, -9, 7, 0xfff8e7)
-      .setStrokeStyle(2, 0x172b3a);
-    const pupil = this.add.circle(16, -9, 3.2, 0x172b3a);
-    const eyeHighlight = this.add.circle(17, -10, 1.2, 0xffffff);
-
-    this.beak = this.add.triangle(29, 1, 0, 0, 17, 7, 0, 14, 0xf4a84e)
-      .setStrokeStyle(2, 0xb86f25)
-      .setOrigin(0.15, 0.5);
-
-    this.birdVisual.add([
-      tailGold,
-      tailRed,
-      tailGreen,
-      body,
-      this.wing,
-      textileMark,
-      textileCore,
-      eyeRing,
-      pupil,
-      eyeHighlight,
-      this.beak,
-    ]);
+    this.birdSprite = this.add.image(0, 0, 'kurdi-bird')
+      .setDisplaySize(BIRD_WIDTH, BIRD_HEIGHT)
+      .setOrigin(0.5);
+    this.birdVisual.add(this.birdSprite);
 
     this.birdBody = this.add.ellipse(
       BIRD_X,
@@ -280,22 +231,20 @@ export class KurdiBirdScene extends Phaser.Scene {
     const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
     body.setVelocityY(FLAP_VELOCITY);
 
-    this.tweens.killTweensOf(this.wing);
     this.tweens.killTweensOf(this.birdVisual);
-    this.wing.rotation = -0.12;
-
+    this.birdVisual.rotation = -0.08;
     this.tweens.add({
-      targets: this.wing,
-      rotation: 0.68,
-      duration: 85,
+      targets: this.birdVisual,
+      rotation: 0.18,
+      duration: 105,
       yoyo: true,
       ease: 'Cubic.easeOut',
     });
 
     this.tweens.add({
       targets: this.birdVisual,
-      scaleX: 1.05,
-      scaleY: 0.96,
+      scaleX: 1.04,
+      scaleY: 0.97,
       duration: 80,
       yoyo: true,
       ease: 'Quad.easeOut',
