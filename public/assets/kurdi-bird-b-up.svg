@@ -1,15 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><g stroke="#172B3A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-<path d="M35 58 C22 48 12 47 5 51 C12 58 22 61 37 63 Z" fill="#E10600"/>
-<path d="M36 62 C23 62 14 67 10 74 C20 74 30 71 42 66 Z" fill="#FFD23F"/>
-<path d="M39 65 C29 70 24 77 25 83 C34 81 42 75 47 68 Z" fill="#109647"/>
-<path d="M34 34 C40 16 59 7 82 9 C105 10 124 22 128 41 C132 60 120 77 98 84 C75 91 49 84 35 70 C25 58 24 44 34 34 Z" fill="#FFD23F"/>
-<path d="M61 14 L67 2 L75 15 Z" fill="#FFD23F"/><path d="M76 12 L86 1 L90 14 Z" fill="#FFD23F"/><path d="M91 15 L101 6 L100 20 Z" fill="#FFD23F"/>
-<!-- wing raised clearly above body -->
-<path d="M55 47 C42 34 34 22 39 16 C48 13 58 20 65 33 C70 43 72 53 69 61 C64 60 59 54 55 47 Z" fill="#8F1D28"/>
-<path d="M56 47 C47 37 42 28 45 23 C52 21 59 28 64 38 C67 45 67 51 64 56 C61 54 58 51 56 47 Z" fill="#E10600"/>
-<path d="M54 41 C49 35 49 30 52 27 C57 29 60 34 61 40 C60 44 58 46 56 47 Z" fill="#F04A4A"/>
-<path d="M47 35 C52 37 57 41 61 46 C64 50 68 51 71 48 C68 41 61 35 53 32 Z" fill="#109647" stroke-width="3"/>
-<path d="M75 69 L84 78 L75 87 L66 78 Z" fill="#E10600" stroke-width="2"/><path d="M75 74 L79 78 L75 82 L71 78 Z" fill="#109647" stroke-width="1.5"/>
-<circle cx="101" cy="34" r="13" fill="#FFF7E6"/><circle cx="106" cy="35" r="5.5" fill="#20180F" stroke="none"/><circle cx="108" cy="32" r="2" fill="#FFFFFF" stroke="none"/>
-<path d="M126 39 L151 49 L126 59 Z" fill="#FB8C00"/><path d="M126 49 L146 51" fill="none" stroke="#C66A00" stroke-width="2"/>
+<path d="M34 60 C22 49 10 48 4 52 C12 60 22 63 39 65 Z" fill="#E10600"/><path d="M38 64 C24 63 14 69 10 76 C22 76 32 72 44 68 Z" fill="#FFD23F"/><path d="M42 67 C31 73 26 81 27 88 C37 85 46 78 51 70 Z" fill="#109647"/>
+<path d="M38 34 C45 16 65 7 88 9 C112 10 130 23 133 43 C136 62 124 78 102 85 C78 93 51 85 38 70 C28 58 27 44 38 34 Z" fill="#FFD23F"/>
+<path d="M65 14 L71 2 L79 15 Z" fill="#FFD23F"/><path d="M80 12 L90 1 L94 15 Z" fill="#FFD23F"/><path d="M95 15 L106 6 L104 20 Z" fill="#FFD23F"/>
+<!-- large dramatic raised wing -->
+<path d="M55 48 C45 31 43 15 51 10 C61 12 69 25 72 40 C74 52 71 63 66 70 C60 64 57 56 55 48 Z" fill="#8F1D28"/>
+<path d="M57 47 C50 34 50 22 55 18 C62 20 67 31 69 42 C70 51 67 58 63 64 C60 59 58 53 57 47 Z" fill="#E10600"/>
+<path d="M55 40 C52 34 53 28 57 24 C62 29 64 35 64 42 C62 46 59 48 56 48 Z" fill="#F04A4A"/>
+<path d="M48 31 C54 34 59 39 62 44 C65 48 70 49 74 46 C70 39 63 33 54 29 Z" fill="#109647" stroke-width="3"/>
+<path d="M82 69 L91 78 L82 87 L73 78 Z" fill="#E10600" stroke-width="2"/><path d="M82 74 L86 78 L82 82 L78 78 Z" fill="#109647" stroke-width="1.5"/>
+<circle cx="106" cy="34" r="14" fill="#FFF7E6"/><circle cx="111" cy="35" r="6" fill="#20180F" stroke="none"/><circle cx="113" cy="32" r="2.2" fill="#FFFFFF" stroke="none"/>
+<path d="M130 39 L156 49 L130 59 Z" fill="#FB8C00"/><path d="M130 49 L151 51" fill="none" stroke="#C66A00" stroke-width="2"/>
 </g></svg>
