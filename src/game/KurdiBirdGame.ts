@@ -7,10 +7,11 @@ const GROUND_Y = 735;
 const BIRD_X = 142;
 const BIRD_RADIUS = 15;
 const PIPE_WIDTH = 76;
-const PIPE_GAP = 215;
-const PIPE_SPEED = 175;
-const GRAVITY = 980;
-const FLAP_VELOCITY = -350;
+const PIPE_GAP = 225;
+const PIPE_SPEED = 165;
+const GRAVITY = 860;
+const FLAP_VELOCITY = -365;
+const MAX_FALL_SPEED = 520;
 
 type GameStateView = { phase: string; score: number; bestScore: number };
 
@@ -28,6 +29,7 @@ export class KurdiBirdScene extends Phaser.Scene {
   private birdBody!: Phaser.GameObjects.Ellipse;
   private birdVisual!: Phaser.GameObjects.Container;
   private wing!: Phaser.GameObjects.Ellipse;
+  private beak!: Phaser.GameObjects.Triangle;
   private pipes!: Phaser.GameObjects.Group;
   private pipePairs: PipePair[] = [];
   private state = new GameStateStore();
@@ -59,11 +61,14 @@ export class KurdiBirdScene extends Phaser.Scene {
     this.birdBody.setPosition(BIRD_X, HEIGHT * 0.48);
     this.birdVisual.setPosition(BIRD_X, HEIGHT * 0.48);
     this.birdVisual.rotation = 0;
-    this.wing.rotation = -0.25;
+    this.birdVisual.scale = 1;
+    this.wing.rotation = -0.22;
+    this.beak.scaleX = 1;
+
     const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
     body.reset(BIRD_X, HEIGHT * 0.48);
     body.setVelocity(0, 0);
-    this.nextPipeAt = 900;
+    this.nextPipeAt = 1050;
     this.emitState();
   }
 
@@ -71,14 +76,20 @@ export class KurdiBirdScene extends Phaser.Scene {
     if (!this.birdBody?.body) return;
 
     this.birdVisual.setPosition(this.birdBody.x, this.birdBody.y);
-    if (this.state.value.phase !== 'playing') return;
+    if (this.state.value.phase !== 'playing') {
+      const idleBob = Math.sin(time / 240) * 4;
+      this.birdVisual.y += idleBob;
+      return;
+    }
 
     const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
-    this.birdVisual.rotation = Phaser.Math.Clamp(body.velocity.y / 900, -0.35, 0.65);
+    if (body.velocity.y > MAX_FALL_SPEED) body.setVelocityY(MAX_FALL_SPEED);
+    this.birdVisual.rotation = Phaser.Math.Clamp(body.velocity.y / 820, -0.42, 0.7);
+    this.beak.rotation = Phaser.Math.Clamp(body.velocity.y / 1600, -0.03, 0.12);
 
     if (time >= this.nextPipeAt) {
       this.spawnPipePair();
-      this.nextPipeAt = time + Phaser.Math.Between(1350, 1650);
+      this.nextPipeAt = time + Phaser.Math.Between(1400, 1750);
     }
 
     const moveX = (PIPE_SPEED * delta) / 1000;
@@ -155,29 +166,74 @@ export class KurdiBirdScene extends Phaser.Scene {
   private createBird(): void {
     this.birdVisual = this.add.container(BIRD_X, HEIGHT * 0.48).setDepth(5);
 
-    this.wing = this.add.ellipse(-7, 8, 25, 15, 0xd94a4a)
-      .setRotation(-0.25)
-      .setOrigin(0.9, 0.5);
+    // Tail fan: three Kurdish-colour feathers make the silhouette readable at a glance.
+    const tailGreen = this.add.triangle(-22, 8, 0, 7, -20, -6, -20, 20, 0x5c9b69)
+      .setRotation(-0.1);
+    const tailRed = this.add.triangle(-24, 2, 0, 7, -20, -6, -20, 20, 0xd94a4a)
+      .setRotation(0.02)
+      .setAlpha(0.9);
+
+    this.wing = this.add.ellipse(-8, 8, 26, 16, 0xd94a4a)
+      .setRotation(-0.22)
+      .setOrigin(0.9, 0.5)
+      .setStrokeStyle(2, 0x8d2b34);
+
+    // Gold body + subtle dark outline keeps the bird legible against the mountains.
     const body = this.add.ellipse(0, 0, 46, 34, 0xf4c95d).setStrokeStyle(3, 0x172b3a);
-    const eye = this.add.circle(13, -8, 5, 0xfff8e7);
+
+    // A simple red/green sash gives the bird a distinct Kurdish-inspired signature.
+    const sash = this.add.rectangle(-11, 10, 26, 8, 0xd94a4a)
+      .setRotation(-0.14)
+      .setStrokeStyle(1, 0x8d2b34);
+    const sashStripe = this.add.rectangle(-12, 10, 8, 8, 0x5c9b69).setRotation(-0.14);
+
+    // Small red crest adds personality without making the silhouette busy.
+    const crest = this.add.triangle(-1, -18, 0, 10, 9, 0, -7, 0, 0xd94a4a)
+      .setRotation(-0.1)
+      .setStrokeStyle(1, 0x8d2b34);
+
+    const eyeRing = this.add.circle(13, -8, 6, 0xfff8e7).setStrokeStyle(1, 0xd6b75a);
     const pupil = this.add.circle(15, -8, 2.5, 0x172b3a);
-    const beak = this.add.triangle(29, 1, 0, 0, 16, 6, 0, 12, 0xf4a84e);
-    const scarf = this.add.rectangle(-13, 11, 20, 7, 0x5c9b69).setRotation(-0.15);
+    const eyeHighlight = this.add.circle(16, -9, 0.9, 0xffffff);
 
-    this.birdVisual.add([body, this.wing, eye, pupil, beak, scarf]);
+    this.beak = this.add.triangle(28, 1, 0, 0, 16, 6, 0, 12, 0xf4a84e)
+      .setStrokeStyle(1, 0xb86f25)
+      .setOrigin(0.15, 0.5);
 
-    this.birdBody = this.add.ellipse(BIRD_X, HEIGHT * 0.48, BIRD_RADIUS * 2, BIRD_RADIUS * 2, 0xffffff, 0).setDepth(4);
+    this.birdVisual.add([
+      tailGreen,
+      tailRed,
+      body,
+      sash,
+      sashStripe,
+      crest,
+      this.wing,
+      eyeRing,
+      pupil,
+      eyeHighlight,
+      this.beak,
+    ]);
+
+    this.birdBody = this.add.ellipse(
+      BIRD_X,
+      HEIGHT * 0.48,
+      BIRD_RADIUS * 2,
+      BIRD_RADIUS * 2,
+      0xffffff,
+      0,
+    ).setDepth(4);
     this.physics.add.existing(this.birdBody);
     const physicsBody = this.birdBody.body as Phaser.Physics.Arcade.Body;
     physicsBody
       .setCircle(BIRD_RADIUS)
+      .setOffset(0, 0)
       .setAllowGravity(true)
       .setGravityY(GRAVITY)
       .setCollideWorldBounds(false);
   }
 
   private spawnPipePair(): void {
-    const gapY = Phaser.Math.Between(300, 550);
+    const gapY = Phaser.Math.Between(305, 545);
     const topHeight = gapY - PIPE_GAP / 2;
     const bottomY = gapY + PIPE_GAP / 2;
     const bottomHeight = GROUND_Y - bottomY;
@@ -216,20 +272,22 @@ export class KurdiBirdScene extends Phaser.Scene {
     body.setVelocityY(FLAP_VELOCITY);
 
     this.tweens.killTweensOf(this.wing);
-    this.wing.rotation = -0.1;
+    this.tweens.killTweensOf(this.birdVisual);
+    this.wing.rotation = -0.12;
+
     this.tweens.add({
       targets: this.wing,
-      rotation: 0.55,
-      duration: 90,
+      rotation: 0.72,
+      duration: 85,
       yoyo: true,
       ease: 'Cubic.easeOut',
     });
 
     this.tweens.add({
       targets: this.birdVisual,
-      scaleX: 1.05,
-      scaleY: 0.96,
-      duration: 70,
+      scaleX: 1.06,
+      scaleY: 0.95,
+      duration: 80,
       yoyo: true,
       ease: 'Quad.easeOut',
     });
