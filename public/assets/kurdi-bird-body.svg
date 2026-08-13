@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><g stroke="#172B3A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<!-- three-feather tail -->
+<path d="M38 58 C24 47 13 44 5 49 C13 58 23 62 41 63 Z" fill="#E10600"/>
+<path d="M40 63 C24 62 13 67 8 74 C20 76 31 72 45 66 Z" fill="#FFD23F"/>
+<path d="M42 67 C29 73 22 80 23 87 C35 84 43 77 49 68 Z" fill="#109647"/>
+<!-- long golden body -->
+<path d="M33 34 C39 17 58 8 82 9 C106 10 126 22 129 42 C132 61 120 78 98 85 C74 92 47 83 34 69 C24 58 24 43 33 34 Z" fill="#FFD23F"/>
+<!-- head tufts -->
+<path d="M61 13 L67 1 L75 14 Z" fill="#FFD23F"/>
+<path d="M76 12 L86 1 L90 14 Z" fill="#FFD23F"/>
+<path d="M91 15 L101 6 L100 20 Z" fill="#FFD23F"/>
+<!-- expressive eye -->
+<circle cx="102" cy="34" r="14" fill="#FFF7E6"/>
+<circle cx="107" cy="35" r="5.8" fill="#20180F" stroke="none"/>
+<circle cx="109" cy="32" r="2.2" fill="#FFFFFF" stroke="none"/>
+<!-- beak -->
+<path d="M126 39 L151 49 L126 59 Z" fill="#FB8C00"/>
+<path d="M126 49 L146 51" fill="none" stroke="#C66A00" stroke-width="2"/>
+<!-- subtle Kurdish-inspired belly motif -->
+<path d="M78 69 L88 79 L78 89 L68 79 Z" fill="#E10600" stroke-width="2"/>
+<path d="M78 74 L83 79 L78 84 L73 79 Z" fill="#109647" stroke-width="1.5"/>
+</g></svg>
