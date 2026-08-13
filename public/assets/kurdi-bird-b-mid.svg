@@ -1,15 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><g stroke="#172B3A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-<path d="M35 58 C22 48 12 47 5 51 C12 58 22 61 37 63 Z" fill="#E10600"/>
-<path d="M36 62 C23 62 14 67 10 74 C20 74 30 71 42 66 Z" fill="#FFD23F"/>
-<path d="M39 65 C29 70 24 77 25 83 C34 81 42 75 47 68 Z" fill="#109647"/>
-<path d="M34 34 C40 16 59 7 82 9 C105 10 124 22 128 41 C132 60 120 77 98 84 C75 91 49 84 35 70 C25 58 24 44 34 34 Z" fill="#FFD23F"/>
-<path d="M61 14 L67 2 L75 15 Z" fill="#FFD23F"/><path d="M76 12 L86 1 L90 14 Z" fill="#FFD23F"/><path d="M91 15 L101 6 L100 20 Z" fill="#FFD23F"/>
-<!-- wing lifted sideways -->
-<path d="M53 48 C41 38 30 33 24 39 C23 49 31 60 44 65 C56 69 68 64 76 55 C72 48 64 45 53 48 Z" fill="#8F1D28"/>
-<path d="M54 50 C44 43 35 41 31 47 C31 55 39 62 49 65 C58 66 67 61 71 54 C66 50 61 49 54 50 Z" fill="#E10600"/>
-<path d="M52 53 C45 50 39 52 38 57 C41 62 47 65 53 65 C58 62 59 58 57 55 Z" fill="#F04A4A"/>
-<path d="M43 45 C50 47 55 51 59 55 C62 58 67 58 72 54 C68 48 60 44 51 42 Z" fill="#109647" stroke-width="3"/>
-<path d="M75 69 L84 78 L75 87 L66 78 Z" fill="#E10600" stroke-width="2"/><path d="M75 74 L79 78 L75 82 L71 78 Z" fill="#109647" stroke-width="1.5"/>
-<circle cx="101" cy="34" r="13" fill="#FFF7E6"/><circle cx="106" cy="35" r="5.5" fill="#20180F" stroke="none"/><circle cx="108" cy="32" r="2" fill="#FFFFFF" stroke="none"/>
-<path d="M126 39 L151 49 L126 59 Z" fill="#FB8C00"/><path d="M126 49 L146 51" fill="none" stroke="#C66A00" stroke-width="2"/>
+<path d="M34 60 C22 49 10 48 4 52 C12 60 22 63 39 65 Z" fill="#E10600"/><path d="M38 64 C24 63 14 69 10 76 C22 76 32 72 44 68 Z" fill="#FFD23F"/><path d="M42 67 C31 73 26 81 27 88 C37 85 46 78 51 70 Z" fill="#109647"/>
+<path d="M38 34 C45 16 65 7 88 9 C112 10 130 23 133 43 C136 62 124 78 102 85 C78 93 51 85 38 70 C28 58 27 44 38 34 Z" fill="#FFD23F"/>
+<path d="M65 14 L71 2 L79 15 Z" fill="#FFD23F"/><path d="M80 12 L90 1 L94 15 Z" fill="#FFD23F"/><path d="M95 15 L106 6 L104 20 Z" fill="#FFD23F"/>
+<!-- large wing sweeping upward -->
+<path d="M57 48 C42 34 30 25 24 31 C22 43 29 57 43 65 C57 73 72 67 83 55 C78 48 69 44 57 48 Z" fill="#8F1D28"/>
+<path d="M58 49 C46 39 36 34 31 40 C30 51 38 60 50 65 C61 68 72 63 79 54 C73 49 66 47 58 49 Z" fill="#E10600"/>
+<path d="M55 54 C47 49 40 52 38 58 C42 65 49 69 56 69 C64 65 66 60 63 55 Z" fill="#F04A4A"/>
+<path d="M44 46 C52 48 58 52 62 57 C65 61 71 61 76 57 C72 50 64 45 54 42 Z" fill="#109647" stroke-width="3"/>
+<path d="M82 69 L91 78 L82 87 L73 78 Z" fill="#E10600" stroke-width="2"/><path d="M82 74 L86 78 L82 82 L78 78 Z" fill="#109647" stroke-width="1.5"/>
+<circle cx="106" cy="34" r="14" fill="#FFF7E6"/><circle cx="111" cy="35" r="6" fill="#20180F" stroke="none"/><circle cx="113" cy="32" r="2.2" fill="#FFFFFF" stroke="none"/>
+<path d="M130 39 L156 49 L130 59 Z" fill="#FB8C00"/><path d="M130 49 L151 51" fill="none" stroke="#C66A00" stroke-width="2"/>
 </g></svg>
