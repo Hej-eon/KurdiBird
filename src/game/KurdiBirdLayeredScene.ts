@@ -191,10 +191,15 @@ export class KurdiBirdLayeredScene extends Phaser.Scene {
     const bottomY = gapY + PIPE_GAP / 2;
     const bottomHeight = GROUND_Y - bottomY;
     const x = WIDTH + PIPE_WIDTH;
-    const top = this.add.rectangle(x, topHeight / 2, PIPE_WIDTH, Math.max(40, topHeight), 0xb73b47).setStrokeStyle(3, 0x7a2230).setDepth(1);
-    const bottom = this.add.rectangle(x, bottomY + bottomHeight / 2, PIPE_WIDTH, Math.max(40, bottomHeight), 0xb73b47).setStrokeStyle(3, 0x7a2230).setDepth(1);
-    const topCap = this.add.rectangle(x, topHeight - 3, PIPE_WIDTH + 12, 18, 0xf4c95d).setStrokeStyle(2, 0x8a6a18).setDepth(2);
-    const bottomCap = this.add.rectangle(x, bottomY + 3, PIPE_WIDTH + 12, 18, 0xf4c95d).setStrokeStyle(2, 0x8a6a18).setDepth(2);
+
+    const top = this.add.rectangle(x, topHeight / 2, PIPE_WIDTH, Math.max(40, topHeight), 0x2f8f3b)
+      .setStrokeStyle(3, 0x1c5c24).setDepth(1);
+    const bottom = this.add.rectangle(x, bottomY + bottomHeight / 2, PIPE_WIDTH, Math.max(40, bottomHeight), 0x2f8f3b)
+      .setStrokeStyle(3, 0x1c5c24).setDepth(1);
+    const topCap = this.add.rectangle(x, topHeight - 3, PIPE_WIDTH + 12, 18, 0xf4c95d)
+      .setStrokeStyle(2, 0x8a6a18).setDepth(2);
+    const bottomCap = this.add.rectangle(x, bottomY + 3, PIPE_WIDTH + 12, 18, 0xf4c95d)
+      .setStrokeStyle(2, 0x8a6a18).setDepth(2);
     this.pipes.addMultiple([top, bottom, topCap, bottomCap]);
     this.pipePairs.push({ top, bottom, topCap, bottomCap, topHeight, bottomY, scored: false });
   }
