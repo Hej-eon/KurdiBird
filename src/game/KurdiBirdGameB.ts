@@ -6,8 +6,8 @@ const HEIGHT = 800;
 const GROUND_Y = 735;
 const BIRD_X = 142;
 const BIRD_RADIUS = 15;
-const BIRD_WIDTH = 62;
-const BIRD_HEIGHT = 39;
+const BIRD_WIDTH = 68;
+const BIRD_HEIGHT = 43;
 const PIPE_WIDTH = 76;
 const PIPE_GAP = 225;
 const PIPE_SPEED = 165;
@@ -45,13 +45,13 @@ export class KurdiBirdScene extends Phaser.Scene {
 
   preload(): void {
     const frames = [
-      ['down', 'assets/kurdi-bird-b-down.svg'],
-      ['mid', 'assets/kurdi-bird-b-mid.svg'],
-      ['up', 'assets/kurdi-bird-b-up.svg'],
+      ['down', 'assets/kurdi-bird-b3-down.svg'],
+      ['mid', 'assets/kurdi-bird-b3-mid.svg'],
+      ['up', 'assets/kurdi-bird-b3-up.svg'],
     ] as const;
 
     for (const [name, path] of frames) {
-      this.load.svg(`kurdi-bird-b-${name}-fresh`, path, { width: 160, height: 100 });
+      this.load.svg(`kurdi-bird-b3-${name}`, path, { width: 180, height: 110 });
     }
   }
 
@@ -176,7 +176,7 @@ export class KurdiBirdScene extends Phaser.Scene {
 
   private createBird(): void {
     this.birdVisual = this.add.container(BIRD_X, HEIGHT * 0.48).setDepth(5);
-    this.birdSprite = this.add.image(0, 0, 'kurdi-bird-b-down-fresh')
+    this.birdSprite = this.add.image(0, 0, 'kurdi-bird-b3-down')
       .setDisplaySize(BIRD_WIDTH, BIRD_HEIGHT)
       .setOrigin(0.5);
     this.birdVisual.add(this.birdSprite);
@@ -193,7 +193,7 @@ export class KurdiBirdScene extends Phaser.Scene {
   }
 
   private setWingFrame(frame: number): void {
-    const key = ['kurdi-bird-b-down-fresh', 'kurdi-bird-b-mid-fresh', 'kurdi-bird-b-up-fresh'][frame] ?? 'kurdi-bird-b-down-fresh';
+    const key = ['kurdi-bird-b3-down', 'kurdi-bird-b3-mid', 'kurdi-bird-b3-up'][frame] ?? 'kurdi-bird-b3-down';
     this.birdSprite.setTexture(key);
   }
 
