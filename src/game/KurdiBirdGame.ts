@@ -251,6 +251,33 @@ export class KurdiBirdScene extends Phaser.Scene {
     const state = this.state.value;
     this.events.emit('state-changed', state);
     this.onStateChange?.(state);
+
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best-score');
+    const finalScoreEl = document.getElementById('final-score');
+    const finalBestEl = document.getElementById('final-best');
+    const menu = document.getElementById('menu');
+    const gameOver = document.getElementById('game-over');
+    const reset = document.getElementById('reset-button');
+
+    if (scoreEl) scoreEl.textContent = String(state.score);
+    if (bestEl) bestEl.textContent = String(state.bestScore);
+    if (finalScoreEl) finalScoreEl.textContent = String(state.score);
+    if (finalBestEl) finalBestEl.textContent = String(state.bestScore);
+
+    if (state.phase === 'menu') {
+      menu?.classList.remove('hidden');
+      gameOver?.classList.add('hidden');
+      reset?.classList.remove('visible');
+    } else if (state.phase === 'playing') {
+      menu?.classList.add('hidden');
+      gameOver?.classList.add('hidden');
+      reset?.classList.add('visible');
+    } else {
+      menu?.classList.add('hidden');
+      gameOver?.classList.remove('hidden');
+      reset?.classList.add('visible');
+    }
   }
 
   private flashScore(): void {
