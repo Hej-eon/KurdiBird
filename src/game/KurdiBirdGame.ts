@@ -12,12 +12,22 @@ const PIPE_SPEED = 175;
 const GRAVITY = 980;
 const FLAP_VELOCITY = -350;
 
+interface PipePair {
+  top: Phaser.GameObjects.Rectangle;
+  bottom: Phaser.GameObjects.Rectangle;
+  topCap: Phaser.GameObjects.Rectangle;
+  bottomCap: Phaser.GameObjects.Rectangle;
+  topHeight: number;
+  bottomY: number;
+  scored: boolean;
+}
+
 export class KurdiBirdScene extends Phaser.Scene {
   private birdBody!: Phaser.GameObjects.Ellipse;
   private birdVisual!: Phaser.GameObjects.Container;
   private wing!: Phaser.GameObjects.Ellipse;
-  private pipes!: Phaser.Physics.Arcade.Group;
-  private scoreZone!: Phaser.Physics.Arcade.Group;
+  private pipes!: Phaser.GameObjects.Group;
+  private pipePairs: PipePair[] = [];
   private state = new GameStateStore();
   private nextPipeAt = 0;
 
@@ -28,19 +38,7 @@ export class KurdiBirdScene extends Phaser.Scene {
   create(): void {
     this.createWorld();
     this.createBird();
-    this.pipes = this.physics.add.group({ allowGravity: false, immovable: true });
-    this.scoreZone = this.physics.add.group({ allowGravity: false, immovable: true });
-
-    this.physics.add.overlap(this.birdBody, this.pipes, () => this.endRun());
-    this.physics.add.overlap(this.birdBody, this.scoreZone, (_bird, zone) => {
-      const scoreObject = zone as Phaser.GameObjects.GameObject;
-      if (!scoreObject.getData('scored')) {
-        scoreObject.setData('scored', true);
-        this.state.scorePoint();
-        this.emitState();
-        this.flashScore();
-      }
-    });
+    this.pipes = this.add.group();
 
     this.input.on('pointerdown', () => this.flap());
     this.input.keyboard?.on('keydown-SPACE', (event: KeyboardEvent) => {
@@ -58,13 +56,14 @@ export class KurdiBirdScene extends Phaser.Scene {
     this.birdVisual.setPosition(BIRD_X, HEIGHT * 0.48);
     this.birdVisual.rotation = 0;
     this.wing.rotation = -0.25;
-    (this.birdBody.body as Phaser.Physics.Arcade.Body).reset(BIRD_X, HEIGHT * 0.48);
-    (this.birdBody.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
+    const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
+    body.reset(BIRD_X, HEIGHT * 0.48);
+    body.setVelocity(0, 0);
     this.nextPipeAt = 900;
     this.emitState();
   }
 
-  update(time: number): void {
+  update(time: number, delta: number): void {
     if (!this.birdBody?.body) return;
 
     this.birdVisual.setPosition(this.birdBody.x, this.birdBody.y);
@@ -78,15 +77,50 @@ export class KurdiBirdScene extends Phaser.Scene {
       this.nextPipeAt = time + Phaser.Math.Between(1350, 1650);
     }
 
-    this.pipes.children.each((child) => {
-      const pipe = child as Phaser.GameObjects.Rectangle;
-      if (pipe.x < -PIPE_WIDTH - 30) pipe.destroy();
-      return true;
-    });
+    const moveX = (PIPE_SPEED * delta) / 1000;
+    const birdLeft = this.birdBody.x - BIRD_RADIUS;
+    const birdRight = this.birdBody.x + BIRD_RADIUS;
+    const birdTop = this.birdBody.y - BIRD_RADIUS;
+    const birdBottom = this.birdBody.y + BIRD_RADIUS;
 
-    this.scoreZone.children.each((child) => {
-      const zone = child as Phaser.GameObjects.Rectangle;
-      if (zone.x < -40) zone.destroy();
+    for (const pair of this.pipePairs) {
+      pair.top.x -= moveX;
+      pair.bottom.x -= moveX;
+      pair.topCap.x -= moveX;
+      pair.bottomCap.x -= moveX;
+
+      const pipeLeft = pair.top.x - PIPE_WIDTH / 2;
+      const pipeRight = pair.top.x + PIPE_WIDTH / 2;
+      const capLeft = pair.topCap.x - (PIPE_WIDTH + 12) / 2;
+      const capRight = pair.topCap.x + (PIPE_WIDTH + 12) / 2;
+
+      const hitsHorizontalPipe = birdRight > pipeLeft && birdLeft < pipeRight;
+      const hitsHorizontalCap = birdRight > capLeft && birdLeft < capRight;
+      const hitsTop = birdTop < pair.topHeight;
+      const hitsBottom = birdBottom > pair.bottomY;
+
+      // Collision is calculated only against the visible pipe rectangles/caps.
+      if ((hitsHorizontalPipe || hitsHorizontalCap) && (hitsTop || hitsBottom)) {
+        this.endRun();
+        break;
+      }
+
+      if (!pair.scored && pipeRight < this.birdBody.x) {
+        pair.scored = true;
+        this.state.scorePoint();
+        this.emitState();
+        this.flashScore();
+      }
+    }
+
+    this.pipePairs = this.pipePairs.filter((pair) => {
+      if (pair.top.x < -PIPE_WIDTH - 50) {
+        pair.top.destroy();
+        pair.bottom.destroy();
+        pair.topCap.destroy();
+        pair.bottomCap.destroy();
+        return false;
+      }
       return true;
     });
 
@@ -134,7 +168,6 @@ export class KurdiBirdScene extends Phaser.Scene {
     const physicsBody = this.birdBody.body as Phaser.Physics.Arcade.Body;
     physicsBody
       .setCircle(BIRD_RADIUS)
-      .setOffset(0, 0)
       .setAllowGravity(true)
       .setGravityY(GRAVITY)
       .setCollideWorldBounds(false);
@@ -143,60 +176,34 @@ export class KurdiBirdScene extends Phaser.Scene {
   private spawnPipePair(): void {
     const gapY = Phaser.Math.Between(300, 550);
     const topHeight = gapY - PIPE_GAP / 2;
-    const bottomHeight = GROUND_Y - (gapY + PIPE_GAP / 2);
+    const bottomY = gapY + PIPE_GAP / 2;
+    const bottomHeight = GROUND_Y - bottomY;
     const x = WIDTH + PIPE_WIDTH;
 
     const top = this.add.rectangle(x, topHeight / 2, PIPE_WIDTH, Math.max(40, topHeight), 0xb73b47)
       .setStrokeStyle(3, 0x7a2230)
       .setDepth(1);
-    this.physics.add.existing(top);
-    const topBody = top.body as Phaser.Physics.Arcade.Body;
-    topBody.setSize(PIPE_WIDTH, Math.max(40, topHeight), true);
-    topBody.setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
-    this.pipes.add(top);
-
     const bottom = this.add.rectangle(
       x,
-      gapY + PIPE_GAP / 2 + bottomHeight / 2,
+      bottomY + bottomHeight / 2,
       PIPE_WIDTH,
       Math.max(40, bottomHeight),
       0xb73b47,
     ).setStrokeStyle(3, 0x7a2230).setDepth(1);
-    this.physics.add.existing(bottom);
-    const bottomBody = bottom.body as Phaser.Physics.Arcade.Body;
-    bottomBody.setSize(PIPE_WIDTH, Math.max(40, bottomHeight), true);
-    bottomBody.setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
-    this.pipes.add(bottom);
 
     const topCap = this.add.rectangle(x, topHeight - 3, PIPE_WIDTH + 12, 18, 0xf4c95d)
       .setStrokeStyle(2, 0x8a6a18)
       .setDepth(2);
-    this.physics.add.existing(topCap);
-    const topCapBody = topCap.body as Phaser.Physics.Arcade.Body;
-    topCapBody.setSize(PIPE_WIDTH + 12, 18, true);
-    topCapBody.setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
-    this.pipes.add(topCap);
-
     const bottomCap = this.add.rectangle(
       x,
-      gapY + PIPE_GAP / 2 + 3,
+      bottomY + 3,
       PIPE_WIDTH + 12,
       18,
       0xf4c95d,
     ).setStrokeStyle(2, 0x8a6a18).setDepth(2);
-    this.physics.add.existing(bottomCap);
-    const bottomCapBody = bottomCap.body as Phaser.Physics.Arcade.Body;
-    bottomCapBody.setSize(PIPE_WIDTH + 12, 18, true);
-    bottomCapBody.setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
-    this.pipes.add(bottomCap);
 
-    const zone = this.add.rectangle(x, gapY, 26, PIPE_GAP, 0xffffff, 0);
-    zone.setData('scored', false);
-    this.physics.add.existing(zone);
-    const zoneBody = zone.body as Phaser.Physics.Arcade.Body;
-    zoneBody.setSize(26, PIPE_GAP, true);
-    zoneBody.setAllowGravity(false).setImmovable(true).setVelocityX(-PIPE_SPEED);
-    this.scoreZone.add(zone);
+    this.pipes.addMultiple([top, bottom, topCap, bottomCap]);
+    this.pipePairs.push({ top, bottom, topCap, bottomCap, topHeight, bottomY, scored: false });
   }
 
   private flap(): void {
@@ -234,7 +241,7 @@ export class KurdiBirdScene extends Phaser.Scene {
 
   private clearPipes(): void {
     this.pipes?.clear(true, true);
-    this.scoreZone?.clear(true, true);
+    this.pipePairs = [];
   }
 
   private emitState(): void {
