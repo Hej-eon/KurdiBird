@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><g stroke="#172B3A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<!-- broad wing, down -->
+<path d="M53 46 C40 43 29 46 27 55 C28 68 39 80 54 84 C66 84 76 75 78 63 C74 52 65 47 53 46 Z" fill="#8F1D28"/>
+<path d="M54 49 C43 48 35 53 35 61 C39 72 49 78 60 78 C68 75 73 68 73 61 C69 52 63 49 54 49 Z" fill="#E10600"/>
+<path d="M55 55 C48 58 44 64 47 71 C53 75 60 72 65 66 C65 60 61 56 55 55 Z" fill="#F04A4A"/>
+<!-- green scallop detail -->
+<path d="M42 48 C50 49 55 53 59 58 C62 62 67 63 72 59 C68 51 60 46 51 44 Z" fill="#109647" stroke-width="3"/>
+</g></svg>
