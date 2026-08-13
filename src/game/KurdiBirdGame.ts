@@ -28,7 +28,7 @@ interface PipePair {
 export class KurdiBirdScene extends Phaser.Scene {
   private birdBody!: Phaser.GameObjects.Ellipse;
   private birdVisual!: Phaser.GameObjects.Container;
-  private wing!: Phaser.GameObjects.Ellipse;
+  private wing!: Phaser.GameObjects.Container;
   private beak!: Phaser.GameObjects.Triangle;
   private pipes!: Phaser.GameObjects.Group;
   private pipePairs: PipePair[] = [];
@@ -166,48 +166,59 @@ export class KurdiBirdScene extends Phaser.Scene {
   private createBird(): void {
     this.birdVisual = this.add.container(BIRD_X, HEIGHT * 0.48).setDepth(5);
 
-    // Tail fan: three Kurdish-colour feathers make the silhouette readable at a glance.
-    const tailGreen = this.add.triangle(-22, 8, 0, 7, -20, -6, -20, 20, 0x5c9b69)
-      .setRotation(-0.1);
-    const tailRed = this.add.triangle(-24, 2, 0, 7, -20, -6, -20, 20, 0xd94a4a)
-      .setRotation(0.02)
-      .setAlpha(0.9);
+    // Bold concept: clean golden body, large expressive eye, strong red wing,
+    // small green accent, and one subtle textile-inspired diamond motif.
+    const tailGold = this.add.ellipse(-20, 5, 22, 15, 0xe1ad39)
+      .setRotation(-0.05)
+      .setStrokeStyle(2, 0x8f6c18);
+    const tailRed = this.add.triangle(-28, 2, 0, 7, -23, -4, -22, 18, 0xd94a4a)
+      .setRotation(-0.02)
+      .setStrokeStyle(1.5, 0x8d2b34);
+    const tailGreen = this.add.triangle(-27, 10, 0, 6, -21, -4, -23, 16, 0x5c9b69)
+      .setRotation(0.12)
+      .setStrokeStyle(1.5, 0x365d40);
 
-    this.wing = this.add.ellipse(-8, 8, 26, 16, 0xd94a4a)
-      .setRotation(-0.22)
-      .setOrigin(0.9, 0.5)
-      .setStrokeStyle(2, 0x8d2b34);
+    const body = this.add.ellipse(0, 0, 48, 36, 0xf4c95d)
+      .setStrokeStyle(3, 0x172b3a);
 
-    // Gold body + subtle dark outline keeps the bird legible against the mountains.
-    const body = this.add.ellipse(0, 0, 46, 34, 0xf4c95d).setStrokeStyle(3, 0x172b3a);
-
-    // A simple red/green sash gives the bird a distinct Kurdish-inspired signature.
-    const sash = this.add.rectangle(-11, 10, 26, 8, 0xd94a4a)
-      .setRotation(-0.14)
-      .setStrokeStyle(1, 0x8d2b34);
-    const sashStripe = this.add.rectangle(-12, 10, 8, 8, 0x5c9b69).setRotation(-0.14);
-
-    // Small red crest adds personality without making the silhouette busy.
-    const crest = this.add.triangle(-1, -18, 0, 10, 9, 0, -7, 0, 0xd94a4a)
+    this.wing = this.add.container(-9, 7).setSize(31, 38);
+    const wingBack = this.add.ellipse(-3, 5, 26, 38, 0xb62f39)
       .setRotation(-0.1)
-      .setStrokeStyle(1, 0x8d2b34);
+      .setStrokeStyle(2, 0x7a2230);
+    const wingMid = this.add.ellipse(1, 0, 25, 34, 0xd94a4a)
+      .setRotation(-0.15)
+      .setStrokeStyle(2, 0x8d2b34);
+    const wingFront = this.add.ellipse(5, -4, 22, 28, 0xe95b61)
+      .setRotation(-0.18)
+      .setStrokeStyle(2, 0x8d2b34);
+    const wingAccent = this.add.ellipse(7, -1, 17, 11, 0x5c9b69)
+      .setRotation(-0.15)
+      .setStrokeStyle(1.5, 0x365d40);
+    this.wing.add([wingBack, wingMid, wingFront, wingAccent]);
 
-    const eyeRing = this.add.circle(13, -8, 6, 0xfff8e7).setStrokeStyle(1, 0xd6b75a);
-    const pupil = this.add.circle(15, -8, 2.5, 0x172b3a);
-    const eyeHighlight = this.add.circle(16, -9, 0.9, 0xffffff);
+    const motif = this.add.container(-7, 11);
+    const diamondOuter = this.add.polygon(0, 0, [0, -6, 8, 0, 0, 6, -8, 0], 0xd94a4a)
+      .setStrokeStyle(1.5, 0x8d2b34);
+    const diamondInner = this.add.polygon(0, 0, [0, -3, 4, 0, 0, 3, -4, 0], 0x5c9b69)
+      .setStrokeStyle(1, 0x365d40);
+    motif.add([diamondOuter, diamondInner]);
 
-    this.beak = this.add.triangle(28, 1, 0, 0, 16, 6, 0, 12, 0xf4a84e)
-      .setStrokeStyle(1, 0xb86f25)
+    const eyeRing = this.add.circle(14, -9, 7, 0xfff8e7)
+      .setStrokeStyle(2, 0x172b3a);
+    const pupil = this.add.circle(16, -9, 3.2, 0x172b3a);
+    const eyeHighlight = this.add.circle(17, -10, 1.2, 0xffffff);
+
+    this.beak = this.add.triangle(29, 1, 0, 0, 17, 7, 0, 14, 0xf4a84e)
+      .setStrokeStyle(2, 0xb86f25)
       .setOrigin(0.15, 0.5);
 
     this.birdVisual.add([
-      tailGreen,
+      tailGold,
       tailRed,
+      tailGreen,
       body,
-      sash,
-      sashStripe,
-      crest,
       this.wing,
+      motif,
       eyeRing,
       pupil,
       eyeHighlight,
@@ -277,7 +288,7 @@ export class KurdiBirdScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.wing,
-      rotation: 0.72,
+      rotation: 0.68,
       duration: 85,
       yoyo: true,
       ease: 'Cubic.easeOut',
@@ -285,8 +296,8 @@ export class KurdiBirdScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.birdVisual,
-      scaleX: 1.06,
-      scaleY: 0.95,
+      scaleX: 1.05,
+      scaleY: 0.96,
       duration: 80,
       yoyo: true,
       ease: 'Quad.easeOut',
