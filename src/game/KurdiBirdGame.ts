@@ -166,42 +166,39 @@ export class KurdiBirdScene extends Phaser.Scene {
   private createBird(): void {
     this.birdVisual = this.add.container(BIRD_X, HEIGHT * 0.48).setDepth(5);
 
-    // Bold concept: clean golden body, large expressive eye, strong red wing,
-    // small green accent, and one subtle textile-inspired diamond motif.
-    const tailGold = this.add.ellipse(-20, 5, 22, 15, 0xe1ad39)
+    // Bold concept, simplified for reliable rendering: golden body, strong red wing,
+    // restrained green accents, large eye, and a clean silhouette.
+    const tailGold = this.add.ellipse(-21, 5, 22, 14, 0xe1ad39)
       .setRotation(-0.05)
       .setStrokeStyle(2, 0x8f6c18);
-    const tailRed = this.add.triangle(-28, 2, 0, 7, -23, -4, -22, 18, 0xd94a4a)
-      .setRotation(-0.02)
-      .setStrokeStyle(1.5, 0x8d2b34);
-    const tailGreen = this.add.triangle(-27, 10, 0, 6, -21, -4, -23, 16, 0x5c9b69)
+    const tailRed = this.add.ellipse(-27, 1, 19, 10, 0xd94a4a)
+      .setRotation(-0.15)
+      .setStrokeStyle(2, 0x8d2b34);
+    const tailGreen = this.add.ellipse(-27, 10, 18, 9, 0x5c9b69)
       .setRotation(0.12)
       .setStrokeStyle(1.5, 0x365d40);
 
     const body = this.add.ellipse(0, 0, 48, 36, 0xf4c95d)
       .setStrokeStyle(3, 0x172b3a);
 
-    this.wing = this.add.container(-9, 7).setSize(31, 38);
-    const wingBack = this.add.ellipse(-3, 5, 26, 38, 0xb62f39)
+    this.wing = this.add.container(-9, 7).setSize(30, 37);
+    const wingBack = this.add.ellipse(-3, 4, 25, 36, 0xb62f39)
       .setRotation(-0.1)
       .setStrokeStyle(2, 0x7a2230);
-    const wingMid = this.add.ellipse(1, 0, 25, 34, 0xd94a4a)
+    const wingMid = this.add.ellipse(1, 0, 24, 32, 0xd94a4a)
       .setRotation(-0.15)
       .setStrokeStyle(2, 0x8d2b34);
-    const wingFront = this.add.ellipse(5, -4, 22, 28, 0xe95b61)
-      .setRotation(-0.18)
-      .setStrokeStyle(2, 0x8d2b34);
-    const wingAccent = this.add.ellipse(7, -1, 17, 11, 0x5c9b69)
-      .setRotation(-0.15)
+    const wingAccent = this.add.ellipse(6, -1, 15, 10, 0x5c9b69)
+      .setRotation(-0.12)
       .setStrokeStyle(1.5, 0x365d40);
-    this.wing.add([wingBack, wingMid, wingFront, wingAccent]);
+    this.wing.add([wingBack, wingMid, wingAccent]);
 
-    const motif = this.add.container(-7, 11);
-    const diamondOuter = this.add.polygon(0, 0, [0, -6, 8, 0, 0, 6, -8, 0], 0xd94a4a)
+    // One small textile-inspired mark, kept separate from the wing for clarity.
+    const textileMark = this.add.rectangle(-7, 11, 9, 9, 0xd94a4a)
+      .setRotation(0.785)
       .setStrokeStyle(1.5, 0x8d2b34);
-    const diamondInner = this.add.polygon(0, 0, [0, -3, 4, 0, 0, 3, -4, 0], 0x5c9b69)
-      .setStrokeStyle(1, 0x365d40);
-    motif.add([diamondOuter, diamondInner]);
+    const textileCore = this.add.rectangle(-7, 11, 4, 4, 0x5c9b69)
+      .setRotation(0.785);
 
     const eyeRing = this.add.circle(14, -9, 7, 0xfff8e7)
       .setStrokeStyle(2, 0x172b3a);
@@ -218,7 +215,8 @@ export class KurdiBirdScene extends Phaser.Scene {
       tailGreen,
       body,
       this.wing,
-      motif,
+      textileMark,
+      textileCore,
       eyeRing,
       pupil,
       eyeHighlight,
