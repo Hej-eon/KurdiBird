@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 100" role="img" aria-label="KurdiBird">
+  <g stroke="#172B3A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tail feathers -->
+    <path d="M31 55 C20 48 11 45 4 49 C10 57 19 61 32 62 Z" fill="#D94A4A"/>
+    <path d="M32 61 C20 62 11 66 6 73 C17 75 26 72 36 66 Z" fill="#F4C95D"/>
+    <path d="M34 66 C25 72 20 79 20 85 C29 83 37 77 43 69 Z" fill="#5C9B69"/>
+
+    <!-- golden body -->
+    <path d="M31 30 C36 12 56 5 79 7 C101 9 119 24 121 43 C123 62 111 79 91 84 C68 90 42 82 30 67 C20 54 20 40 31 30 Z" fill="#F4C95D"/>
+
+    <!-- three head tufts -->
+    <path d="M55 12 L61 1 L68 13 Z" fill="#F4C95D"/>
+    <path d="M68 10 L78 0 L81 13 Z" fill="#F4C95D"/>
+    <path d="M80 12 L91 4 L91 18 Z" fill="#F4C95D"/>
+
+    <!-- bold layered red wing -->
+    <path d="M31 45 C17 35 9 35 6 42 C10 48 18 52 29 54 Z" fill="#B62F39"/>
+    <path d="M34 47 C18 45 8 49 8 56 C16 61 24 60 36 56 Z" fill="#D94A4A"/>
+    <path d="M39 51 C25 55 18 62 20 69 C29 72 37 67 46 59 Z" fill="#E95B61"/>
+    <!-- green scalloped wing accent -->
+    <path d="M28 43 C32 44 36 46 40 50 C43 53 47 55 51 55 C48 48 43 43 36 39 Z" fill="#5C9B69" stroke-width="2"/>
+
+    <!-- Kurdish-inspired diamond motif -->
+    <path d="M55 66 L64 75 L55 84 L46 75 Z" fill="#D94A4A" stroke-width="2"/>
+    <path d="M55 71 L60 75 L55 79 L50 75 Z" fill="#5C9B69" stroke-width="2"/>
+
+    <!-- eye -->
+    <circle cx="96" cy="35" r="12" fill="#FFF8E7"/>
+    <circle cx="100" cy="36" r="5" fill="#172B3A" stroke="none"/>
+    <circle cx="102" cy="33" r="2" fill="#FFFFFF" stroke="none"/>
+
+    <!-- beak -->
+    <path d="M118 39 L137 47 L118 56 Z" fill="#F4A84E"/>
+    <path d="M118 47 L134 49" fill="none" stroke="#B86F25" stroke-width="2"/>
+  </g>
+</svg>
