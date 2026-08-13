@@ -12,6 +12,8 @@ const PIPE_SPEED = 175;
 const GRAVITY = 980;
 const FLAP_VELOCITY = -350;
 
+type GameStateView = { phase: string; score: number; bestScore: number };
+
 interface PipePair {
   top: Phaser.GameObjects.Rectangle;
   bottom: Phaser.GameObjects.Rectangle;
@@ -30,9 +32,11 @@ export class KurdiBirdScene extends Phaser.Scene {
   private pipePairs: PipePair[] = [];
   private state = new GameStateStore();
   private nextPipeAt = 0;
+  private readonly onStateChange?: (state: GameStateView) => void;
 
-  constructor() {
+  constructor(onStateChange?: (state: GameStateView) => void) {
     super('game');
+    this.onStateChange = onStateChange;
   }
 
   create(): void {
@@ -244,7 +248,9 @@ export class KurdiBirdScene extends Phaser.Scene {
   }
 
   private emitState(): void {
-    this.events.emit('state-changed', this.state.value);
+    const state = this.state.value;
+    this.events.emit('state-changed', state);
+    this.onStateChange?.(state);
   }
 
   private flashScore(): void {
