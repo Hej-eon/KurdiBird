@@ -99,13 +99,12 @@ export class KurdiBirdScene extends Phaser.Scene {
       const hitsTop = birdTop < pair.topHeight;
       const hitsBottom = birdBottom > pair.bottomY;
 
-      // Collision is calculated only against the visible pipe rectangles/caps.
       if ((hitsHorizontalPipe || hitsHorizontalCap) && (hitsTop || hitsBottom)) {
         this.endRun();
         break;
       }
 
-      if (!pair.scored && pipeRight < this.birdBody.x) {
+      if (!pair.scored && pipeRight <= this.birdBody.x) {
         pair.scored = true;
         this.state.scorePoint();
         this.emitState();
