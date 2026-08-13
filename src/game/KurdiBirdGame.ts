@@ -35,6 +35,7 @@ export class KurdiBirdScene extends Phaser.Scene {
   private pipePairs: PipePair[] = [];
   private state = new GameStateStore();
   private nextPipeAt = 0;
+  private wingFrame = 0;
   private readonly onStateChange?: (state: GameStateView) => void;
 
   constructor(onStateChange?: (state: GameStateView) => void) {
@@ -43,10 +44,9 @@ export class KurdiBirdScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.svg('kurdi-bird', 'assets/kurdi-bird.svg', {
-      width: 160,
-      height: 100,
-    });
+    for (const frame of ['down', 'mid', 'up']) {
+      this.load.svg(`kurdi-bird-${frame}`, `assets/kurdi-bird-${frame}.svg`, { width: 160, height: 100 });
+    }
   }
 
   create(): void {
@@ -70,6 +70,7 @@ export class KurdiBirdScene extends Phaser.Scene {
     this.birdVisual.setPosition(BIRD_X, HEIGHT * 0.48);
     this.birdVisual.rotation = 0;
     this.birdVisual.scale = 1;
+    this.setWingFrame(0);
 
     const body = this.birdBody.body as Phaser.Physics.Arcade.Body;
     body.reset(BIRD_X, HEIGHT * 0.48);
@@ -169,9 +170,7 @@ export class KurdiBirdScene extends Phaser.Scene {
 
   private createBird(): void {
     this.birdVisual = this.add.container(BIRD_X, HEIGHT * 0.48).setDepth(5);
-    this.birdSprite = this.add.image(0, 0, 'kurdi-bird')
-      .setDisplaySize(BIRD_WIDTH, BIRD_HEIGHT)
-      .setOrigin(0.5);
+    this.birdSprite = this.add.image(0, 0, 'kurdi-bird-down').setDisplaySize(BIRD_WIDTH, BIRD_HEIGHT).setOrigin(0.5);
     this.birdVisual.add(this.birdSprite);
 
     this.birdBody = this.add.ellipse(
@@ -190,6 +189,19 @@ export class KurdiBirdScene extends Phaser.Scene {
       .setAllowGravity(true)
       .setGravityY(GRAVITY)
       .setCollideWorldBounds(false);
+  }
+
+  private setWingFrame(frame: number): void {
+    this.wingFrame = frame;
+    const keys = ['kurdi-bird-down', 'kurdi-bird-mid', 'kurdi-bird-up'];
+    this.birdSprite.setTexture(keys[frame] ?? keys[0]);
+  }
+
+  private animateWing(): void {
+    this.setWingFrame(1);
+    this.time.delayedCall(65, () => this.setWingFrame(2));
+    this.time.delayedCall(135, () => this.setWingFrame(1));
+    this.time.delayedCall(210, () => this.setWingFrame(0));
   }
 
   private spawnPipePair(): void {
@@ -249,6 +261,8 @@ export class KurdiBirdScene extends Phaser.Scene {
       yoyo: true,
       ease: 'Quad.easeOut',
     });
+
+    this.animateWing();
   }
 
   private endRun(): void {
