@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { KurdiBirdScene, HEIGHT, WIDTH } from './game/KurdiBirdGame';
+import { KurdiBirdSceneV2 as KurdiBirdScene, HEIGHT, WIDTH } from './game/KurdiBirdGameV2';
 import './styles.css';
 
 const menu = document.getElementById('menu')!;
